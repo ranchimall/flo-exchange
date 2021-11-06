@@ -219,6 +219,47 @@ class Users {
         return false;
     }
 
+    
+    public function check_flo_id_active_status($flo_id) {
+
+        if ($this->databaseConnection()) {
+
+            $query = $this->db_connection->prepare("SELECT * FROM $this->customers_table WHERE flo_id = :flo_id AND is_active = 1 LIMIT 1");
+            $query->bindParam('flo_id', $flo_id);
+
+            if ($query->execute()) {
+                $row_count = $query->rowCount();
+                if ($row_count == 1) {
+                    return true;
+                }
+                return false;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public function check_flo_id_registration_status($flo_id) {
+
+        if ($this->databaseConnection()) {
+
+            $query = $this->db_connection->prepare("SELECT * FROM $this->customers_table WHERE flo_id = :flo_id LIMIT 1");
+            $query->bindParam('flo_id', $flo_id);
+
+            if ($query->execute()) {
+                $row_count = $query->rowCount();
+                if ($row_count == 1) {
+                    return true;
+                }
+                return false;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
     public function displayUserTransaction($user_id, $start=0, $limit=10) {
         if ($this->databaseConnection()) {
             $transactions = array();
