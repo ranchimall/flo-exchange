@@ -127,6 +127,77 @@ class Users {
             return false;
         }
     }
+    
+    public function is_flo_registered($flo_id) {
+
+        if ($this->databaseConnection()) {
+            $now = $this->time_now();
+            $query = $this->db_connection->prepare("SELECT * FROM $this->customers_table WHERE `flo_id`=:flo_id");
+            $query->bindValue(':flo_id', $flo_id, PDO::PARAM_STR);
+            $query->execute();
+
+            $rowCount = $query->rowCount();
+
+            if($rowCount) {
+
+                $user_obj = $query->fetchObject();
+
+                $update_query = $this->db_connection->prepare("UPDATE $this->customers_table
+                                                            SET `SaveDate`='$now'
+                                                            WHERE `flo_id`=:flo_id
+                                                            LIMIT 1");
+                $update_query->bindValue(':flo_id', $flo_id, PDO::PARAM_STR);
+                $update_query->execute();
+
+                $_SESSION['user_id'] = $user_obj->CustomerId;
+                $_SESSION['user_name'] = $user_obj->Username;
+                $_SESSION['email'] = $user_obj->Email;
+
+                if (!isset($_SESSION['last_trade_date'])) {
+                    $_SESSION['last_trade_date'] = $user_obj->SaveDate;
+                }
+                return true;
+
+            } else {
+
+                $this->user_name = $_SESSION['first_name'].time();
+                $this->name = $_SESSION['full_name'];
+                $this->email = $_SESSION['email'];
+
+                $query = $this->db_connection->prepare("
+                    INSERT INTO $this->customers_table (`CustomerId`, `fb_id`, `Username`, `Email`, `Name`, `UpdateDate`, `InsertDate`, `SaveDate`, `is_active`)
+                    VALUES ('',:fb_id,:Username,:Email,:Name,NULL,'$now',NULL,0)
+                ");
+
+                $query->bindValue(':flo_id', $flo_id, PDO::PARAM_INT);
+                $query->bindValue(':Username', $this->user_name, PDO::PARAM_STR);
+                $query->bindValue(':Email', $this->email, PDO::PARAM_STR);
+                $query->bindValue(':Name', $this->name, PDO::PARAM_STR);
+                if($query->execute()) {
+                    $_SESSION['user_id'] = $this->db_connection->lastInsertId();
+                    $_SESSION['user_name'] = $this->user_name;
+                    $AssetTypeId = 'btc';
+                    $Balance = 0.00;
+                    $FrozenBalance = 0.00;
+                    $crypto = $this->insert_balance($_SESSION['user_id'], $AssetTypeId, $Balance, $FrozenBalance);
+
+                    $AssetTypeId = 'traditional';
+                    $Balance = 0.00;
+                    $FrozenBalance = 0.00;
+                    $cash = $this->insert_balance($_SESSION['user_id'], $AssetTypeId, $Balance, $FrozenBalance);
+
+                    $user_exist = $this->check_user($_SESSION['user_id']);
+                    if($user_exist && $crypto && $cash) {
+                        return true;
+                    }
+                    return false;
+                }
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
     public function check_user($customerId) {
 
