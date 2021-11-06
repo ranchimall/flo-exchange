@@ -10,9 +10,9 @@ $sell_list = array();
 include_once 'floconfig.php';
 $validate_user = null;
 if (isset($UserClass)) {
-    if (isset($fb_id)):
+    if (isset($flo_id)):
         // check if user already registered
-        $validate_user = $UserClass->is_fb_registered($fb_id);
+        $validate_user = $UserClass->is_flo_registered($flo_id);
         if($validate_user == "" || $validate_user == false) {
             redirect_to('index.php');
         }
@@ -25,8 +25,8 @@ if (isset($UserClass)) {
 
 $fullName = isset($_SESSION['full_name']) ? $_SESSION['full_name'] : "";
 $user_logged_in = false;
-$action_class_market = 'fb_log_in';
-$action_class_buy_sell = 'fb_log_in';
+$action_class_market = 'flo_log_in';
+$action_class_buy_sell = 'flo_log_in';
 if(checkLoginStatus()) {
     $user_logged_in = true;
     $action_class_market = 'market_submit_btn';
