@@ -7,7 +7,7 @@ error_reporting(0);
 $tradersList = array();
 $buy_list = array();
 $sell_list = array();
-include_once 'fbconfig.php';
+include_once 'floconfig.php';
 $validate_user = null;
 if (isset($UserClass)) {
     if (isset($fb_id)):
