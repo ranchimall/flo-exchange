@@ -417,7 +417,7 @@ function MyTransactions() {
 
 function checkLoginStatusJS() {
 
-    $(document).on('click drop', '.fb_log_in', function (e) {
+    $(document).on('click drop', '.flo_log_in', function (e) {
         e.preventDefault();
         $('#LoginModel').modal('toggle');
     });
