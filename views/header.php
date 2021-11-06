@@ -89,7 +89,7 @@ $type = isset($_GET['type']) ? trim($_GET['type']) : 'danger';
             <?php } elseif(isset($loginUrl)) {?>
                 <a href="<?=$loginUrl?>" role="button" class="pull-right popup" name="fb_login">
                     <div class="btn btn--facebook ">
-                        Continue with Facebook
+                        Continue with FLO Address
                     </div>
                 </a>
             <?php } ?>
