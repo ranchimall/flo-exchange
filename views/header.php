@@ -51,6 +51,7 @@ if(checkLoginStatus()) {
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://sairajzero.github.io/Standard_Operations/cdn/floCrypto.js"></script>
 
     <script src="<?=JS_DIR?>/notify.js"></script>
 
