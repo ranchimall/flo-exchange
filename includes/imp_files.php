@@ -1,13 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
- * Date: 10/3/2017
- * Time: 7:49 PM
- */
 
 if(!isset($_SESSION)) {
     session_start();
+    $_SESSION['session_id'] = session_id();
 }
 
 require_once 'defines.php';
