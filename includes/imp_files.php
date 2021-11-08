@@ -18,9 +18,8 @@ $log_fullName = null;
 $user_email = null;
 
 if (checkLoginStatus()) {
-    if (isset($_SESSION['fb_id'], $_SESSION['user_name'], $_SESSION['user_id'])) {
-        $fb_id = $_SESSION['fb_id'];
-        $user_name = $_SESSION['user_name'];
+    if (isset($_SESSION['flo_id'], $_SESSION['user_id'])) {
+        $flo_id = $_SESSION['flo_id'];
         $user_id = $_SESSION['user_id'];
     } else {
         redirect_to("logout.php");
