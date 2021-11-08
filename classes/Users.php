@@ -127,8 +127,8 @@ class Users {
         }
     }
     
-    public function is_flo_registered($flo_id) {
-
+      public function doInitialUserHandling($flo_id) {
+//CAREFUL this will update the username with FLO ID 
         if ($this->databaseConnection()) {
             $now = $this->time_now();
             $query = $this->db_connection->prepare("SELECT * FROM $this->customers_table WHERE `flo_id`=:flo_id");
@@ -149,8 +149,12 @@ class Users {
                 $update_query->execute();
 
                 $_SESSION['user_id'] = $user_obj->CustomerId;
-                $_SESSION['user_name'] = $user_obj->Username;
-                $_SESSION['email'] = $user_obj->Email;
+               // $_SESSION['user_name'] = $user_obj->Username;
+               // $_SESSION['email'] = $user_obj->Email;
+                  $_SESSION['user_name'] = $flo_id;
+                  $_SESSION['email'] = $flo_id;
+
+
 
                 if (!isset($_SESSION['last_trade_date'])) {
                     $_SESSION['last_trade_date'] = $user_obj->SaveDate;
@@ -159,13 +163,14 @@ class Users {
 
             } else {
 
-                $this->user_name = $_SESSION['first_name'].time();
-                $this->name = $_SESSION['full_name'];
-                $this->email = $_SESSION['email'];
+                //NOT NEEDED
+                //$this->user_name = $_SESSION['first_name'].time();
+                //$this->name = $_SESSION['full_name'];
+                //$this->email = $_SESSION['email'];
 
                 $query = $this->db_connection->prepare("
-                    INSERT INTO $this->customers_table (`CustomerId`, `fb_id`, `Username`, `Email`, `Name`, `UpdateDate`, `InsertDate`, `SaveDate`, `is_active`)
-                    VALUES ('',:fb_id,:Username,:Email,:Name,NULL,'$now',NULL,0)
+                    INSERT INTO $this->customers_table (`CustomerId`, `flo_id`, `Username`, `Email`, `Name`, `UpdateDate`, `InsertDate`, `SaveDate`, `is_active`)
+                    VALUES ('',:flo_id,:flo_id,:flo_id,:flo_id,NULL,'$now',NULL,0)
                 ");
 
                 $query->bindValue(':flo_id', $flo_id, PDO::PARAM_INT);
@@ -174,7 +179,8 @@ class Users {
                 $query->bindValue(':Name', $this->name, PDO::PARAM_STR);
                 if($query->execute()) {
                     $_SESSION['user_id'] = $this->db_connection->lastInsertId();
-                    $_SESSION['user_name'] = $this->user_name;
+                   // $_SESSION['user_name'] = $this->user_name;
+                     $_SESSION['user_name'] = $flo_id;
                     $AssetTypeId = 'btc';
                     $Balance = 0.00;
                     $FrozenBalance = 0.00;
