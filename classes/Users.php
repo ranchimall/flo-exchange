@@ -18,7 +18,6 @@ class Users {
     private $bal_history = CREDITS_HISTORY_TABLE;
     private $bank_acc = ACCOUNTS_TABLE;
     private $fund_trans = TRANSFER_INFO_TABLE;
-    private $user_name = null;
     private $email = null;
     private $name = null;
     private $is_active = null;
