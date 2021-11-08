@@ -258,6 +258,57 @@ class Users {
         }
         return false;
     }
+    
+    public function checkIfFloIDPermitted($flo_id){
+    if ((check_flo_id_registration_status($flo_id) == true) && (check_flo_id_active_status($flo_id) == true)){
+            return true;
+    }
+
+    return false;
+}
+
+public function insert_floPublicKey($flo_id, $floPublicKey) {
+
+        if ($this->databaseConnection()) {
+
+            $query = $this->db_connection->prepare("
+                    INSERT INTO $this->customers_table (`floPublicKey` )
+                    VALUES (:floPublicKey)
+                    WHERE `flo_id` = :flo_id
+                ");
+            $query->bindParam('flo_id', $flo_id);
+            $query->bindParam('floPublicKey', $floPublicKey);
+
+            if ($query->execute()) {
+                $row_count = $query->rowCount();
+                if ($row_count == 1) {
+                    return true;
+                }
+                return false;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+
+public function insert_flo_details($floID, $auth_random, $floPublicKey) {
+        $now = $this->time_now();
+        if ($this->databaseConnection()) {
+            $query = $this->db_connection->prepare("INSERT INTO `$this->customers_table`(`auth_random`, `floPublicKey`, `updateDate`) VALUES (:authRandom,:floPublicKey,'$now') WHERE `flo_id` = :floID");
+            $query->bindValue(':authRandom', $auth_random, PDO::PARAM_STR);
+            $query->bindValue(':floPublicKey', $floPublicKey, PDO::PARAM_STR);
+            $query->bindValue(':floID', $floID, PDO::PARAM_STR);
+            
+
+            if($query->execute()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public function displayUserTransaction($user_id, $start=0, $limit=10) {
         if ($this->databaseConnection()) {
