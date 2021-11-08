@@ -67,6 +67,7 @@ $std->error = false;
                 $_SESSION['authenticated'] = true;
                 
                 //TEMPORARILY ASSIGNING ALL THESE VARIABLES TO $floID
+                $_SESSION['first_name'] = $floID;
                 $_SESSION['full_name'] = $floID;
                 $_SESSION['email'] = $floID;
                 $_SESSION['fb_id'] = $floID;
