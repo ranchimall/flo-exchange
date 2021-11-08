@@ -3,10 +3,10 @@ if (!isset($user_id)) {
     $user_id = $_SESSION['user_id'];
 }
 if (!isset($user_email)) {
-    $user_email = $_SESSION['email'];
+    $user_email = $_SESSION['flo_id'];
 }
 if (!isset($log_fullName)) {
-    $log_fullName = $_SESSION['full_name'];
+    $log_fullName = $_SESSION['flo_id'];
 }
 if (($user_email == null) && ($user_logged_in == true)) {
 
