@@ -63,6 +63,14 @@ $std->error = false;
                 setcookie("exchange[flo_id]", $floID, time () + (86400 * $cookie_life_days));
                 setcookie("exchange[session_id]", $s_id, time () + (86400 * $cookie_life_days));
                 setcookie("exchange[flo_pub_key]", $pubKey,time () + (86400 * $cookie_life_days)); 
+                
+                $_SESSION['authenticated'] = true;
+                
+                //TEMPORARILY ASSIGNING ALL THESE VARIABLES TO $floID
+                $_SESSION['full_name'] = $floID;
+                $_SESSION['email'] = $floID;
+                $_SESSION['fb_id'] = $floID;
+
 
                 echo json_encode($std);
                 return true;
