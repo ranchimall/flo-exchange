@@ -1,11 +1,10 @@
 <?php
 
+require_once 'includes/imp_files.php';
+
 $std = new stdClass();
-$std->users = null;
-$std->cash = null;
-$std->bit = null;
 $std->message = array();
-$std->error = false;
+$std->error = true;
 
     if (isset($_POST['flo_id'], $_POST['flo_pub_key'], $_SESSION['session_id'], $_POST['signDataWithFlo'] )){
         
@@ -59,23 +58,36 @@ $std->error = false;
                 //store $s_id (session ID) in SQl
                 ob_end_clean();
                 ob_start();
-                $std->error = false;
+                
                 setcookie("exchange[flo_id]", $floID, time () + (86400 * $cookie_life_days));
                 setcookie("exchange[session_id]", $s_id, time () + (86400 * $cookie_life_days));
                 setcookie("exchange[flo_pub_key]", $pubKey,time () + (86400 * $cookie_life_days)); 
-                
+
+//CHECK THIS AND MAKE THIS A REAL VARIABLE
                 $_SESSION['authenticated'] = true;
-                
-                //TEMPORARILY ASSIGNING ALL THESE VARIABLES TO $floID
-                $_SESSION['first_name'] = $floID;
+
+//TEMPORARILY ASSIGNING ALL THESE VARIABLES TO $floID
                 $_SESSION['full_name'] = $floID;
                 $_SESSION['email'] = $floID;
                 $_SESSION['fb_id'] = $floID;
+                $_SESSION['flo_id'] = $floID;
 
+//Now  I need to enter public key and session ID in database .. but first I need to know the username 
+                if (isset($UserClass)) { 
+                    $permitted_status = $UserClass->checkIfFloIDPermitted($flo_id);
+                    if ($permitted_status == true){
+                    $UserClass->insert_flo_details($floID, $s_id, $pubKey);} 
+                } else {
+                    $std->message[] = "FLO ID is either not registered or not active.";
+                    $std->error = true;
+                    echo json_encode($std);
+                    return false;    
+                }            
 
-                echo json_encode($std);
-                return true;
-                }
+            $std->error = false;
+            echo json_encode($std);
+            return true;
+            }
             
                 
               else {
