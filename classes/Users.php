@@ -120,9 +120,30 @@ class Users {
             return false;
         }
     }
-    
-      public function doInitialUserHandling($flo_id) {
-//CAREFUL this will update the username with FLO ID 
+
+//$flo_id must exist and there must be fb_id set against it
+public function does_fb_id_exist($flo_id){
+    if ($this->databaseConnection()) {
+
+            $query = $this->db_connection->prepare("SELECT `fb_id` FROM $this->customers_table WHERE flo_id = :flo_id LIMIT 1");
+            $query->bindParam('flo_id', $flo_id);
+
+            if ($query->execute()) {
+                $row_count = $query->rowCount();
+                if ($row_count == 1) {
+                    if ($query->fetchObject()->fb_id != "" ){
+                    return true; }
+                }
+                return false;
+            } 
+        }
+        return false;
+}
+
+
+    public function doInitialUserHandling($flo_id) {
+//CAREFUL this will update the username with FLO ID FOR NEW USERS 
+// If username exists then do only FLO ID  insertion        
         if ($this->databaseConnection()) {
             $now = $this->time_now();
             $query = $this->db_connection->prepare("SELECT * FROM $this->customers_table WHERE `flo_id`=:flo_id");
@@ -198,28 +219,8 @@ class Users {
         }
     }
 
-    public function check_user($customerId) {
 
-        if ($this->databaseConnection()) {
-
-            $query = $this->db_connection->prepare("SELECT * FROM $this->customers_table WHERE customerId = :customerId AND is_active = 1 LIMIT 1");
-            $query->bindParam('customerId', $customerId);
-
-            if ($query->execute()) {
-                $row_count = $query->rowCount();
-                if ($row_count == 1) {
-                    return $user_details = $query->fetchObject();
-                }
-                return false;
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    
-    public function check_flo_id_active_status($flo_id) {
+public function check_flo_id_active_status($flo_id) {
 
         if ($this->databaseConnection()) {
 
@@ -239,7 +240,7 @@ class Users {
         return false;
     }
 
-    public function check_flo_id_registration_status($flo_id) {
+public function check_flo_id_registration_status($flo_id) {
 
         if ($this->databaseConnection()) {
 
@@ -258,14 +259,40 @@ class Users {
         }
         return false;
     }
-    
-    public function checkIfFloIDPermitted($flo_id){
-    if ((check_flo_id_registration_status($flo_id) == true) && (check_flo_id_active_status($flo_id) == true)){
+
+
+public function checkIfFloIDPermitted($flo_id){
+    if (($this->check_flo_id_registration_status($flo_id) == true) && ($this->check_flo_id_active_status($flo_id) == true)){
             return true;
     }
 
     return false;
 }
+
+public function insert_floPublicKey($flo_id, $floPublicKey) {
+
+        if ($this->databaseConnection()) {
+
+            $query = $this->db_connection->prepare("
+                    UPDATE $this->customers_table SET `floPublicKey` = :floPublicKey
+                    WHERE `flo_id` = :flo_id
+                ");
+            $query->bindParam('flo_id', $flo_id);
+            $query->bindParam('floPublicKey', $floPublicKey);
+
+            if ($query->execute()) {
+                $row_count = $query->rowCount();
+                if ($row_count == 1) {
+                    return true;
+                }
+                return false;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
 
 public function insert_flo_details($floID, $auth_random, $floPublicKey) {
         
@@ -285,22 +312,25 @@ public function insert_flo_details($floID, $auth_random, $floPublicKey) {
     }
 
 
-public function insert_flo_details($floID, $auth_random, $floPublicKey) {
-        $now = $this->time_now();
-        if ($this->databaseConnection()) {
-            $query = $this->db_connection->prepare("INSERT INTO `$this->customers_table`(`auth_random`, `floPublicKey`, `updateDate`) VALUES (:authRandom,:floPublicKey,'$now') WHERE `flo_id` = :floID");
-            $query->bindValue(':authRandom', $auth_random, PDO::PARAM_STR);
-            $query->bindValue(':floPublicKey', $floPublicKey, PDO::PARAM_STR);
-            $query->bindValue(':floID', $floID, PDO::PARAM_STR);
-            
+    public function check_user($customerId) {
 
-            if($query->execute()) {
-                return true;
+        if ($this->databaseConnection()) {
+
+            $query = $this->db_connection->prepare("SELECT * FROM $this->customers_table WHERE customerId = :customerId AND is_active = 1 LIMIT 1");
+            $query->bindParam('customerId', $customerId);
+
+            if ($query->execute()) {
+                $row_count = $query->rowCount();
+                if ($row_count == 1) {
+                    return $user_details = $query->fetchObject();
+                }
+                return false;
+            } else {
+                return false;
             }
         }
         return false;
     }
-
 
     public function displayUserTransaction($user_id, $start=0, $limit=10) {
         if ($this->databaseConnection()) {
