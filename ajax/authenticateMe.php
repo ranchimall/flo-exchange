@@ -1,6 +1,7 @@
 <?php
 
 require_once 'includes/imp_files.php';
+$cookie_life_days = COOKIE_LIFE_DAYS;
 
 $std = new stdClass();
 $std->message = array();
@@ -73,6 +74,7 @@ $std->error = true;
                 $_SESSION['flo_id'] = $floID;
 
 //Now  I need to enter public key and session ID in database .. but first I need to know the username 
+// This check can be suspended here. If the user has correct FLO signature, but does not exist in database, he will fail the gate at acc_deact.php
                 if (isset($UserClass)) { 
                     $permitted_status = $UserClass->checkIfFloIDPermitted($flo_id);
                     if ($permitted_status == true){
