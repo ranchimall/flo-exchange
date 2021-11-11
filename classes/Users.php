@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: user
- * Date: 17-Oct-16
- * Time: 9:22 AM
- */
 
 class Users {
 
@@ -273,26 +267,18 @@ class Users {
     return false;
 }
 
-public function insert_floPublicKey($flo_id, $floPublicKey) {
-
+public function insert_flo_details($floID, $auth_random, $floPublicKey) {
+        
+        $now = $this->time_now();
         if ($this->databaseConnection()) {
+            $query = $this->db_connection->prepare("UPDATE `$this->customers_table` SET `auth_random` = :authRandom, `floPublicKey` = :floPublicKey, `updateDate` = '$now' WHERE `flo_id` = :floID LIMIT 1");
+            $query->bindValue(':authRandom', $auth_random, PDO::PARAM_STR);
+            $query->bindValue(':floPublicKey', $floPublicKey, PDO::PARAM_STR);
+            $query->bindValue(':floID', $floID, PDO::PARAM_STR);
+            
 
-            $query = $this->db_connection->prepare("
-                    INSERT INTO $this->customers_table (`floPublicKey` )
-                    VALUES (:floPublicKey)
-                    WHERE `flo_id` = :flo_id
-                ");
-            $query->bindParam('flo_id', $flo_id);
-            $query->bindParam('floPublicKey', $floPublicKey);
-
-            if ($query->execute()) {
-                $row_count = $query->rowCount();
-                if ($row_count == 1) {
-                    return true;
-                }
-                return false;
-            } else {
-                return false;
+            if($query->execute()) {
+                return true;
             }
         }
         return false;
