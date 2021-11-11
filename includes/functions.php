@@ -11,10 +11,10 @@ function redirect_to($url=null) {
 }
 
 function checkLoginStatus() {
-    if($_SESSION['authenticated'] != true) {
-        return false;
+    if($_SESSION['authenticated'] == true) {
+        return true;
     }
-    return true;
+    return false;
 }
 
 function extract_int($string) {
