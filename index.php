@@ -1,6 +1,10 @@
 <?php 
-//die('Site is currently under maintenance. We will return soon. Thanks for your patience.');
 ob_start();
+if(!isset($_SESSION['session_id'])) {
+    session_start();
+    $_SESSION['session_id'] = session_id();
+}
+
 date_default_timezone_set('Asia/Kolkata'); ?>
 <?php $user_id = 0; ?>
 <!--Bootstrap-->
