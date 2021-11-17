@@ -1,16 +1,18 @@
 <?php
 
-require_once 'includes/imp_files.php';
+require_once '../includes/imp_files.php';
+session_start();
+
 $cookie_life_days = COOKIE_LIFE_DAYS;
 
 $std = new stdClass();
 $std->message = array();
 $std->error = true;
 
-    if (isset($_POST['flo_id'], $_POST['flo_pub_key'], $_SESSION['session_id'], $_POST['signDataWithFlo'] )){
+    if (isset($_POST['floID'], $_POST['floPubKey'], $_SESSION['session_id'], $_POST['signDataWithFlo'] )){
         
         ob_start();
-   
+        
             function callAPI($method, $url, $data){
             $curl = curl_init();
             switch ($method){
@@ -43,8 +45,8 @@ $std->error = true;
             return $result;
             }
     
-            $floID = $_POST['flo_id'];
-            $pubKey = $_POST['flo_pub_key'];
+            $floID = $_POST['floID'];
+            $pubKey = $_POST['floPubKey'];
             $s_id = $_SESSION['session_id'];
             $signDataWithFlo = $_POST['signDataWithFlo'];
     
@@ -76,16 +78,18 @@ $std->error = true;
 //Now  I need to enter public key and session ID in database .. but first I need to know the username 
 // This check can be suspended here. If the user has correct FLO signature, but does not exist in database, he will fail the gate at acc_deact.php
                 if (isset($UserClass)) { 
-                    $permitted_status = $UserClass->checkIfFloIDPermitted($flo_id);
+                    $permitted_status = $UserClass->checkIfFloIDPermitted($floID);
                     if ($permitted_status == true){
-                    $UserClass->insert_flo_details($floID, $s_id, $pubKey);} 
+                    $UserClass->update_flo_details($floID, $s_id, $pubKey);
+                    $_SESSION['user_id'] = $UserClass->getUserID($floID);    
+                    } 
                 } else {
                     $std->message[] = "FLO ID is either not registered or not active.";
                     $std->error = true;
                     echo json_encode($std);
                     return false;    
-                }            
-
+                }
+            $std->message[] = "Authentication Succeeded.";
             $std->error = false;
             echo json_encode($std);
             return true;
