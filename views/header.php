@@ -3,16 +3,17 @@
 // Turn off error reporting
 error_reporting(0);
 @ini_set('display_errors', 0);
+session_start();
 
 $tradersList = array();
 $buy_list = array();
 $sell_list = array();
-include_once 'floconfig.php';
+
 $validate_user = null;
 if (isset($UserClass)) {
-    if (isset($flo_id)):
+    if (isset($_SESSION['flo_id'])):
         // check if user already registered
-        $validate_user = $UserClass->is_flo_registered($flo_id);
+        $validate_user = $UserClass->doInitialUserHandling($_SESSION['flo_id']);  
         if($validate_user == "" || $validate_user == false) {
             redirect_to('index.php');
         }
@@ -32,6 +33,7 @@ if(checkLoginStatus()) {
     $action_class_market = 'market_submit_btn';
     $action_class_buy_sell = 'process';
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -81,18 +83,83 @@ $type = isset($_GET['type']) ? trim($_GET['type']) : 'danger';
             <a href="http://ranchimall.net/exchange"><div class="logo mt--1"></div></a>
         </div>
         <div class="col-sm-6 text-right mt--1-m">
-            <?php if($user_logged_in) { ?>
+            <?php if(isset($_SESSION['authenticated'])&&($_SESSION['authenticated'] == true)) { ?>
                 <a href="logout.php">
                     <div class="btn btn--facebook ">
                         Log Out
                     </div>
                 </a>
-            <?php } elseif(isset($loginUrl)) {?>
-                <a href="<?=$loginUrl?>" role="button" class="pull-right popup" name="fb_login">
-                    <div class="btn btn--facebook ">
-                        Continue with FLO Address
-                    </div>
-                </a>
+            <?php } else {?>
+                
+        <div class="row" id="to_login_fields">
+        <h2 class="text-center">Login using FLO Private Key </h2>
+        <hr>
+        <div class="col-lg-12 lazy-form">
+            <label for="key_flo">Enter your FLO Private Key</label>
+            <input type="text" name="key_flo" id="key_flo" style="color:initial">
+        </div>
+
+        <div class="col-lg-12">
+            <input type="submit" id="key_flo_submit" class="btn btn--block btn--facebook flo_log_in" style="width: 100%;" value="Enter Key">
+        </div>
+        <a href="logout.php" id="to_logout_fields" style="visibility: hidden;">
+            <div class="btn btn--facebook ">
+                Log Out
+            </div>
+        </a>
+
+    </div>  
+            
+    <script>
+
+// Need to handle authentication fail case .. its easy 
+
+function ajax_authentication(floID1,floPubKey1,message1,signDataWithFlo1) {
+    $.ajax({
+        method:'post',
+        url:'ajax/authenticateMe.php',
+        data: { floID: floID1,floPubKey:floPubKey1,message:message1,signDataWithFlo:signDataWithFlo1},
+        success: function(data) {
+            // console.log(data);
+        }
+    }).error(function(xhr, status, error) {
+        console.log(xhr.responseText);
+    }).success(function(data) {
+        var IS_JSON = true;
+        try {
+            var d = jQuery.parseJSON(data);
+            console.log(d.message);
+        }
+        catch(err) {
+            IS_JSON = false;
+        }
+
+        if(IS_JSON) {
+            if(d.error == false) {
+             document.getElementById("to_login_fields").style.visibility = "hidden";
+             document.getElementById("to_logout_fields").style.visibility = "visible";  
+             
+            }
+        } 
+
+    });
+}
+
+   document.getElementById("key_flo_submit").onclick = function(evt) {
+
+            let floPrivKey = document.getElementById("key_flo").value;
+            let floPubKey = floCrypto.getPubKeyHex(floPrivKey);
+            let floID = floCrypto.getFloID(floPubKey);
+            let message = <?php $_SESSION['session_id'] ?>;
+            let signDataWithFlo = floCrypto.signData(message, floPrivKey);
+            delete floPrivKey;
+            ajax_authentication(floID,floPubKey,message,signDataWithFlo);            
+
+        }
+
+    </script>
+
+
             <?php } ?>
         </div>
     </div>
