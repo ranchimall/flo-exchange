@@ -91,18 +91,20 @@ $type = isset($_GET['type']) ? trim($_GET['type']) : 'danger';
                 </a>
             <?php } else {?>
                 
-        <div class="row" id="to_login_fields">
+<div class="row" >
+    <div id="to_login_fields">    
         <h2 class="text-center">Login using FLO Private Key </h2>
         <hr>
         <div class="col-lg-12 lazy-form">
             <label for="key_flo" id="loginMessage">Enter your FLO Private Key</label>
             <input type="text" name="key_flo" id="key_flo" style="color:initial">
         </div>
-
+        
         <div class="col-lg-12">
             <input type="submit" id="key_flo_submit" class="btn btn--block btn--facebook flo_log_in" style="width: 100%;" value="Enter Key">
         </div>
-        <a href="logout.php" id="to_logout_fields" style="visibility: hidden">
+    </div>
+        <a href="logout.php" id="to_logout_fields" style="display: none">
             <div class="btn btn--facebook ">
                 Log Out
             </div>
@@ -139,8 +141,8 @@ function ajax_authentication(floID,floPubKey,message,signDataWithFlo) {
 
         if(IS_JSON) {
             if(d.error == false) {
-             document.getElementById("to_login_fields").style.visibility = "hidden";
-             document.getElementById("to_logout_fields").style.visibility = "visible"; 
+             document.getElementById("to_login_fields").style.display = "none";
+             document.getElementById("to_logout_fields").style.display = "block"; 
              
             } else {
                 document.getElementById("loginMessage").innerHTML = d.message;
