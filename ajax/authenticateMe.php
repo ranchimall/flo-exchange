@@ -40,7 +40,12 @@ $std->error = true;
             curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
             // EXECUTE:
             $result = curl_exec($curl);
-            if(!$result){die("Connection Failure");}
+            if(!$result){
+                $std->message[] = "Authentication Service is not working ";
+                $std->error = true;
+                echo json_encode($std);
+                return false;
+                }
             curl_close($curl);
             return $result;
             }
@@ -115,3 +120,6 @@ $std->error = true;
     echo json_encode($std);
     return false;
 }
+
+
+
