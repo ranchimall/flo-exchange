@@ -3,7 +3,6 @@
 // Turn off error reporting
 error_reporting(0);
 @ini_set('display_errors', 0);
-session_start();
 
 $tradersList = array();
 $buy_list = array();
@@ -13,7 +12,8 @@ $validate_user = null;
 if (isset($UserClass)) {
     if (isset($_SESSION['flo_id'])):
         // check if user already registered
-        $validate_user = $UserClass->doInitialUserHandling($_SESSION['flo_id']);  
+        $validate_user = $UserClass->doInitialUserHandling($flo_id); 
+        
         if($validate_user == "" || $validate_user == false) {
             redirect_to('index.php');
         }
@@ -95,51 +95,58 @@ $type = isset($_GET['type']) ? trim($_GET['type']) : 'danger';
         <h2 class="text-center">Login using FLO Private Key </h2>
         <hr>
         <div class="col-lg-12 lazy-form">
-            <label for="key_flo">Enter your FLO Private Key</label>
+            <label for="key_flo" id="loginMessage">Enter your FLO Private Key</label>
             <input type="text" name="key_flo" id="key_flo" style="color:initial">
         </div>
 
         <div class="col-lg-12">
             <input type="submit" id="key_flo_submit" class="btn btn--block btn--facebook flo_log_in" style="width: 100%;" value="Enter Key">
         </div>
-        <a href="logout.php" id="to_logout_fields" style="visibility: hidden;">
+        <a href="logout.php" id="to_logout_fields" style="visibility: hidden">
             <div class="btn btn--facebook ">
                 Log Out
             </div>
         </a>
 
-    </div>  
+    </div> 
             
     <script>
 
 // Need to handle authentication fail case .. its easy 
 
-function ajax_authentication(floID1,floPubKey1,message1,signDataWithFlo1) {
+function ajax_authentication(floID,floPubKey,message,signDataWithFlo) {
     $.ajax({
         method:'post',
         url:'ajax/authenticateMe.php',
-        data: { floID: floID1,floPubKey:floPubKey1,message:message1,signDataWithFlo:signDataWithFlo1},
+        data: { floID: floID,floPubKey:floPubKey,message:message,signDataWithFlo:signDataWithFlo},
         success: function(data) {
-            // console.log(data);
+        //     console.log(data);
         }
     }).error(function(xhr, status, error) {
         console.log(xhr.responseText);
+        document.getElementById("loginMessage").innerHTML = xhr.responseText;
+        document.getElementById("loginMessage").style.color = "red";
     }).success(function(data) {
+        
         var IS_JSON = true;
         try {
             var d = jQuery.parseJSON(data);
             console.log(d.message);
-        }
+            }
         catch(err) {
             IS_JSON = false;
-        }
+            }
 
         if(IS_JSON) {
             if(d.error == false) {
              document.getElementById("to_login_fields").style.visibility = "hidden";
-             document.getElementById("to_logout_fields").style.visibility = "visible";  
+             document.getElementById("to_logout_fields").style.visibility = "visible"; 
              
+            } else {
+                document.getElementById("loginMessage").innerHTML = d.message;
+                document.getElementById("loginMessage").style.color = "red";   
             }
+            
         } 
 
     });
@@ -150,11 +157,18 @@ function ajax_authentication(floID1,floPubKey1,message1,signDataWithFlo1) {
             let floPrivKey = document.getElementById("key_flo").value;
             let floPubKey = floCrypto.getPubKeyHex(floPrivKey);
             let floID = floCrypto.getFloID(floPubKey);
-            let message = <?php $_SESSION['session_id'] ?>;
+            
+            if (floID != null) {
+            let message ="<?php echo $_SESSION['session_id'];?>";
             let signDataWithFlo = floCrypto.signData(message, floPrivKey);
             delete floPrivKey;
             ajax_authentication(floID,floPubKey,message,signDataWithFlo);            
-
+            } else {
+                var displayMessage = "Private Key is invalid";
+                console.log(displayMessage);
+                document.getElementById("loginMessage").innerHTML = displayMessage;
+                document.getElementById("loginMessage").style.color = "red";
+            }
         }
 
     </script>
