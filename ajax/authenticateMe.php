@@ -82,17 +82,24 @@ $std->error = true;
                     if ($permitted_status == true){
                     $UserClass->update_flo_details($floID, $s_id, $pubKey);
                     $_SESSION['user_id'] = $UserClass->getUserID($floID);    
-                    } 
-                } else {
-                    $std->message[] = "FLO ID is either not registered or not active.";
-                    $std->error = true;
+                    $std->message[] = "Authentication Succeeded.";
+                    $std->error = false;
                     echo json_encode($std);
-                    return false;    
+                    return true;
+                    } else { 
+                        if (($UserClass->check_flo_id_registration_status($floID) == true) && ($UserClass->check_flo_id_active_status($floID) != true)) {
+                            $std->message[] = "FLO ID is not active. Please contact RanchiMall Team. ";
+                            $std->error = true;
+                            echo json_encode($std);
+                            return false; }
+                        if ($UserClass->check_flo_id_registration_status($floID) != true ) {
+                            $std->message[] = "Your FLO ID is not registered. Please contact RanchiMall Team and get yourself registered.";
+                            $std->error = true;
+                            echo json_encode($std);
+                            return false; }    
+                    }     
                 }
-            $std->message[] = "Authentication Succeeded.";
-            $std->error = false;
-            echo json_encode($std);
-            return true;
+            
             }
             
                 
@@ -108,6 +115,3 @@ $std->error = true;
     echo json_encode($std);
     return false;
 }
-
-
-
