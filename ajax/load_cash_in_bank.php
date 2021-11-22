@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
- * Date: 10/24/2017
- * Time: 9:37 PM
- */
-
 require_once '../includes/imp_files.php';
 
 if (!checkLoginStatus()) {
