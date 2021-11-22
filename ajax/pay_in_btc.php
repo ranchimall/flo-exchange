@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
- * Date: 10/21/2017
- * Time: 8:19 PM
- */
-
 require_once '../includes/imp_files.php';
 
 if (!checkLoginStatus()) {
@@ -144,7 +137,7 @@ if (isset($_POST['job']) && trim($_POST['job']) == "pay_in_btc") {
                         <p>AMOUNT TO TRANSFER: <strong>$ $balance_to_transfer</strong> (DO NOT SEND MORE THAN $ $allowed_bid_amount.)</p>
                         <p>EMAIL: $senders_email</p> 
                         <p>REMARKS: <strong>".$remarks."</strong></p>  
-                        <p>SENDER FB ID: facebook.com/".$fb_id."</p>
+                        <p>SENDER FLO ID: ".$flo_id."</p>
                         </div>
                         <footer>
                         <p>Thank You</p>
