@@ -1,6 +1,6 @@
 <?php
 
-if(!isset($_SESSION)) {
+if(!isset($_SESSION['session_id'])) {
     session_start();
     $_SESSION['session_id'] = session_id();
 }
@@ -11,21 +11,22 @@ include_once 'autoload.php';
 include_once 'functions.php';
 
 //if logged in store user DB details
-$fb_id = null;
+$flo_id = null;
 $user_id = null;
 $log_fullName = null;
 $user_email = null;
 
 if (checkLoginStatus()) {
-    if (isset($_SESSION['flo_id'], $_SESSION['user_id'])) {
-        $fb_id = $_SESSION['fb_id'];
+   
+    if (isset($_SESSION['flo_id'],$_SESSION['user_id'])) {
         $flo_id = $_SESSION['flo_id'];
         $user_id = $_SESSION['user_id'];
+        $log_fullName = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : '';
+        $user_email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
     } else {
         redirect_to("logout.php");
     }
-    $log_fullName = isset($_SESSION['full_name']) ? $_SESSION['full_name'] : '';
-    $user_email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
+
 }
 
 $UserClass = null;
