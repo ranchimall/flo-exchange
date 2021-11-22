@@ -63,7 +63,6 @@ $std->error = true;
     
             if ($response['success'] == 1) {
                 
-                //store $s_id (session ID) in SQl
                 ob_end_clean();
                 ob_start();
                 
@@ -71,13 +70,7 @@ $std->error = true;
                 setcookie("exchange[session_id]", $s_id, time () + (86400 * $cookie_life_days));
                 setcookie("exchange[flo_pub_key]", $pubKey,time () + (86400 * $cookie_life_days)); 
 
-//CHECK THIS AND MAKE THIS A REAL VARIABLE
-                $_SESSION['authenticated'] = true;
-
-//TEMPORARILY ASSIGNING ALL THESE VARIABLES TO $floID
-                $_SESSION['full_name'] = $floID;
-                $_SESSION['email'] = $floID;
-                $_SESSION['fb_id'] = $floID;
+                $_SESSION['authenticated'] = true;         
                 $_SESSION['flo_id'] = $floID;
 
 //Now  I need to enter public key and session ID in database .. but first I need to know the username 
@@ -86,8 +79,15 @@ $std->error = true;
                     $permitted_status = $UserClass->checkIfFloIDPermitted($floID);
                     if ($permitted_status == true){
                     $UserClass->update_flo_details($floID, $s_id, $pubKey);
-                    $_SESSION['user_id'] = $UserClass->getUserID($floID);    
+                    
+                    $userDetails = $UserClass->getUserDetails($floID);
+                    $_SESSION['user_id'] = $userDetails->CustomerId;
+                    $_SESSION['user_name'] = $userDetails->Name;
+                    $_SESSION['email'] = $userDetails->Email;
+
+
                     $std->message[] = "Authentication Succeeded.";
+                    
                     $std->error = false;
                     echo json_encode($std);
                     return true;
@@ -120,6 +120,3 @@ $std->error = true;
     echo json_encode($std);
     return false;
 }
-
-
-
