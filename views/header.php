@@ -24,7 +24,7 @@ if (isset($UserClass)) {
     $sell_list[] = $OrderClass->get_top_buy_sell_list(TOP_SELL_TABLE, $asc_desc='ASC');  // sell
 }
 
-$fullName = isset($_SESSION['full_name']) ? $_SESSION['full_name'] : "";
+$fullName = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : "";
 $user_logged_in = false;
 $action_class_market = 'flo_log_in';
 $action_class_buy_sell = 'flo_log_in';
@@ -141,10 +141,14 @@ function ajax_authentication(floID,floPubKey,message,signDataWithFlo) {
 
         if(IS_JSON) {
             if(d.error == false) {
-             document.getElementById("to_login_fields").style.display = "none";
-             document.getElementById("to_logout_fields").style.display = "block"; 
+             document.getElementById("loginMessage").style.color = "#383838";    
+             document.getElementById("loginMessage").innerHTML = "Successful Login. Reloading Page"; 
+             var delayInMilliseconds = 500; 
+
+            setTimeout(function() {window.location.reload();}, delayInMilliseconds);
              
-            } else {
+             
+                         } else {
                 document.getElementById("loginMessage").innerHTML = d.message;
                 document.getElementById("loginMessage").style.color = "red";   
             }
@@ -190,13 +194,17 @@ function ajax_authentication(floID,floPubKey,message,signDataWithFlo) {
                 <h5 class="font-20 mt--2 text--uppercase text--bold text--center--mobile">Last Traded Price: <span id="_ltp"><?=$LastTradedPrice;?></span></h5>
             <?php } ?>
         </div>
+     
         <?php if($user_logged_in) { ?>
-            <div class="col-sm-6 text-right text--uppercase text--center--mobile ">
+            <div class="col-sm-6 text-right text--center--mobile ">
                 <h2 class="text--uppercase"><?=$fullName?></h2>
-                <h6 class="text--bold">Token Balance: <span id="my_bit_balance">loading...</span> </h6>
-                <h6 class="text--bold">Cash Balance: $ <span id="my_cash_balance">loading...</span> </h6>
+                <h5 class="text-bold"><?=$flo_id?></h2>
+                <h6 class="text--bold text--uppercase">Token Balance: <span id="my_bit_balance">loading...</span> </h6>
+                <h6 class="text--bold text--uppercase">Cash Balance: $ <span id="my_cash_balance">loading...</span> </h6>
             </div>
-        <?php } ?>
+            <script>get_my_balance();</script>
+        <?php } ?> 
+    
     </div>
 </div>
 
