@@ -101,7 +101,7 @@ if (isset($_POST['job'])) {
                         <p>1 BTC AT THE TIME OF REQUEST: $ $btc_today</p>
                         <p>EMAIL: $email_id</p> 
                         <p>REMARKS: <strong>".$remarks."</strong></p>  
-                        <p>SENDER FB ID: facebook.com/".$fb_id."</p>
+                        <p>SENDER FB ID: ".$flo_id."</p>
                         </div>
                         <footer>
                         <p>Thank You</p>
