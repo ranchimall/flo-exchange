@@ -144,8 +144,7 @@ function ajax_authentication(floID,floPubKey,message,signDataWithFlo) {
              document.getElementById("loginMessage").style.color = "#383838";    
              document.getElementById("loginMessage").innerHTML = "Successful Login. Reloading Page"; 
              var delayInMilliseconds = 500; 
-
-            setTimeout(function() {window.location.reload();}, delayInMilliseconds);
+             setTimeout(function() {window.location.reload();}, delayInMilliseconds);
              
              
                          } else {
