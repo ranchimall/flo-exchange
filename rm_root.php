@@ -1,11 +1,13 @@
 <?php ob_start(); date_default_timezone_set('Asia/Kolkata'); ?>
 <?php $user_id = 0; ?>
     <!--Bootstrap-->
-<?php require_once 'views/header.php';?>
+<?php require_once 'includes/imp_files.php';
+      require_once 'views/header.php';
+?>
 
 <?php
 
-    require_once 'includes/imp_files.php';
+    
 
     if (!checkLoginStatus()) {
         redirect_to("index.php");
