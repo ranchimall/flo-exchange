@@ -1,23 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
- * Date: 10/12/2017
- * Time: 10:43 AM
- */
-
 require_once '../includes/imp_files.php';
 
 if (!checkLoginStatus()) {
     return false;
 }
 
-if (isset($_SESSION['fb_id'], $_SESSION['user_id'], $_SESSION['user_name'])) {
-    $root_fb = (int) $_SESSION['fb_id'];
-    $root_user_id = (int) $_SESSION['user_id'];
-    $root_user_name = (string) $_SESSION['user_name'];
-
-    if ($root_fb != ADMIN_FB_ID && $root_user_id != ADMIN_ID && $root_user_name != ADMIN_UNAME) {
+if (isset($_SESSION['flo_id'], $_SESSION['user_id'])) {
+    $root_flo = $_SESSION['flo_id'];
+    $root_user_id = $_SESSION['user_id'];
+    
+    if ($root_flo != ADMIN_FLO_ID && $root_user_id != ADMIN_ID) {
         redirect_to("index.php");
     }
 
