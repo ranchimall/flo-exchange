@@ -1,7 +1,6 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
  * Date: 10/21/2017
  * Time: 3:36 PM
  */
@@ -92,7 +91,7 @@ if($user_logged_in):
                                 <label for="remarks_bal_tr">Remarks (optional)</label>
                                 <textarea name="remarks_bal_tr" id="remarks_bal_tr" cols="30" rows="10" class="form-control" placeholder="max 250 characters" maxlength="250"></textarea>
 
-                                <br<br>
+                                <br>
                                 <input type="button" id="btn_bk_tr" class="btn btn--primary-1 mt--1" value="Transfer">
                             </div>
 

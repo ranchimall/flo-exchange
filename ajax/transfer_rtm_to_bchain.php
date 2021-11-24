@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
- * Date: 10/24/2017
- * Time: 9:35 AM
- */
 
 /**
  *  This section is incomplete
@@ -119,7 +113,7 @@ if (isset($_POST['job']) && trim($_POST['job']) == "rtm_to_bchain") {
                         <p>AMOUNT TO TRANSFER: <strong>RMT $balance_to_transfer</strong></p>
                         <p>EMAIL: $email_id</p> 
                         <p>REMARKS: <strong>".$remarks."</strong></p>  
-                        <p>SENDER FB ID: facebook.com/".$fb_id."</p>
+                        <p>SENDER FLO ID: ".$flo_id."</p>
                         </div>
                         <footer>
                         <p>Thank You</p>

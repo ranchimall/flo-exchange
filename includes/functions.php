@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
- * Date: 10/3/2017
- * Time: 6:33 PM
- */
 
 function round_it($num=0, $deci=2) {
     $decimal = abs(number_format((float)$num, $deci, '.', ''));
@@ -17,10 +11,10 @@ function redirect_to($url=null) {
 }
 
 function checkLoginStatus() {
-    if(!isset($_SESSION['fb_id']) || !isset($_SESSION['user_id']) || !isset($_SESSION['user_name'])) {
-        return false;
+    if($_SESSION['authenticated'] == true) {
+        return true;
     }
-    return true;
+    return false;
 }
 
 function extract_int($string) {

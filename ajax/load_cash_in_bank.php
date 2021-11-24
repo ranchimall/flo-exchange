@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
- * Date: 10/24/2017
- * Time: 9:37 PM
- */
-
 require_once '../includes/imp_files.php';
 
 if (!checkLoginStatus()) {
@@ -101,7 +94,7 @@ if (isset($_POST['job'])) {
                         <p>1 BTC AT THE TIME OF REQUEST: $ $btc_today</p>
                         <p>EMAIL: $email_id</p> 
                         <p>REMARKS: <strong>".$remarks."</strong></p>  
-                        <p>SENDER FB ID: facebook.com/".$fb_id."</p>
+                        <p>SENDER FLO ID: ".$flo_id."</p>
                         </div>
                         <footer>
                         <p>Thank You</p>

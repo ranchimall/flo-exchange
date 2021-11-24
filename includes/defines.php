@@ -2,6 +2,7 @@
 
 if(!isset($_SESSION)) {
     session_start();
+    $_SESSION['session_id'] = session_id();
 }
 
 //SITE DOMAIN NAME WITH HTTP
