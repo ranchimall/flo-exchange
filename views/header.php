@@ -34,6 +34,7 @@ if(checkLoginStatus()) {
     $action_class_buy_sell = 'process';
 }
 
+$_SESSION['rand'] = rand();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -97,7 +98,8 @@ $type = isset($_GET['type']) ? trim($_GET['type']) : 'danger';
         <hr>
         <div class="col-lg-12 lazy-form">
             <label for="key_flo" id="loginMessage">Enter your FLO Private Key</label>
-            <input type="text" name="key_flo" id="key_flo" style="color:initial">
+            <input type="password" name="key_flo" id="key_flo" style="color:initial">
+            
         </div>
         
         <div class="col-lg-12">
@@ -114,7 +116,9 @@ $type = isset($_GET['type']) ? trim($_GET['type']) : 'danger';
             
     <script>
 
-// Need to handle authentication fail case .. its easy 
+// Refresh needed every 12 minutes to fetch new time challenge to be digitally signed
+ var delayInMilliseconds = 700000; 
+ setInterval(function() {window.location.reload();}, delayInMilliseconds);
 
 function ajax_authentication(floID,floPubKey,message,signDataWithFlo) {
     $.ajax({
@@ -141,12 +145,16 @@ function ajax_authentication(floID,floPubKey,message,signDataWithFlo) {
 
         if(IS_JSON) {
             if(d.error == false) {
-             document.getElementById("loginMessage").style.color = "#383838";    
-             document.getElementById("loginMessage").innerHTML = "Successful Login. Reloading Page"; 
-             var delayInMilliseconds = 500; 
-             setTimeout(function() {window.location.reload();}, delayInMilliseconds);
+             document.getElementById("loginMessage").style.color = "#FFFFFF";    
+             document.getElementById("loginMessage").innerHTML = "Successful Login. Digital Signature is verified. Getting user details. <span id='myBlinkingDiv'>Wait a moment<span>";
              
-             
+             var blink_speed = 500; 
+             var t = setInterval(function () {
+                var ele = document.getElementById('myBlinkingDiv');
+                ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+                }, blink_speed);
+                
+             window.location.reload();
                          } else {
                 document.getElementById("loginMessage").innerHTML = d.message;
                 document.getElementById("loginMessage").style.color = "red";   
@@ -164,9 +172,14 @@ function ajax_authentication(floID,floPubKey,message,signDataWithFlo) {
             let floID = floCrypto.getFloID(floPubKey);
             
             if (floID != null) {
-            let message ="<?php echo $_SESSION['session_id'];?>";
+            //Generating a tough challenge for user to sigitally sign    
+            let message ="<?php echo($_SESSION['session_id'] . round(time()/1000)*1000 . $_SESSION['rand']);?>";
             let signDataWithFlo = floCrypto.signData(message, floPrivKey);
             delete floPrivKey;
+
+            document.getElementById("loginMessage").style.color = "#FFFFFF";    
+            document.getElementById("loginMessage").innerHTML = "Digital signature provided for server generated message. Waiting for signature verification.";
+
             ajax_authentication(floID,floPubKey,message,signDataWithFlo);            
             } else {
                 var displayMessage = "Private Key is invalid";
