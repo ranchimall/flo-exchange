@@ -1,9 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * Date: 10/21/2017
- * Time: 3:36 PM
- */
 
 if($user_logged_in):
     $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
