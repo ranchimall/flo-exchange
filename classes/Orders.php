@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: user
- * Date: 17-Oct-16
- * Time: 9:22 AM
- */
+
 require_once "Users.php";
 
 class Orders extends Users {
@@ -36,19 +31,17 @@ class Orders extends Users {
 
             $n = new DateTime("now", new DateTimeZone("Asia/Kolkata"));
             $now = $n->format('Y-m-d H:i:s');
+            $user_id = $_SESSION['user_id'];
 
-            $query = $this->db_connection->prepare("INSERT INTO $top_table(`price`, `orderId`, `quantity`, `customerId`, `insertDate`)
-                      VALUES (:price, :orderId, :quantity, :user_id, '$now')");
-            $query->bindParam("price", $price);
-            $query->bindParam("orderId", $orderId);
-            $query->bindParam("quantity", $quantity);
-            $query->bindParam("user_id", $_SESSION['user_id']);
+            $query = $this->db_connection->query("INSERT INTO $top_table(`price`, `orderId`, `quantity`, `customerId`, `insertDate`)
+                      VALUES ('$price', '$orderId', '$quantity','$user_id' , '$now')");
+          
 
-            if ($query->execute()) {
+            
                 $this->updateOrderStatus($orderId, 3);
                 return true;
-            }
-            return false;
+            
+            
         }
         return false;
     }
@@ -58,15 +51,15 @@ class Orders extends Users {
         if ($this->databaseConnection()) {
 
             $customer_balance = null;
-            $query = $this->db_connection->prepare("SELECT `Balance`, FrozenBalance
+            $query = $this->db_connection->query("SELECT `Balance`, FrozenBalance
                                     FROM $this->customer_balance_table
-                                    WHERE `CustomerId`= :user_id AND `AssetTypeId`='$assetType'");
-            $query->bindParam(":user_id", $user_id);
-            if ($query->execute()) {
+                                    WHERE `CustomerId`= '$user_id' AND `AssetTypeId`='$assetType'");
+            
+            
                 if ($query->rowCount()) {
                     $customer_balance = $query->fetchObject();
                 }
-            }
+            
             return $customer_balance;
         }
         return false;
@@ -77,15 +70,12 @@ class Orders extends Users {
 
             $now = $this->time_now();
 
-            $query = $this->db_connection->prepare("INSERT INTO $this->bal_history (`id`, `user_id`, `balance`, `AssetType`, `datetime`) 
-                      VALUES ('', :uid, :bal, :asset_type, '$now')");
-            $query->bindParam('uid', $user_id);
-            $query->bindParam('bal', $balance);
-            $query->bindParam('asset_type', $type);
-
-            if ($query->execute()) {
+            $query = $this->db_connection->query("INSERT INTO $this->bal_history (`id`, `user_id`, `balance`, `AssetType`, `datetime`) 
+                      VALUES ('', '$user_id', '$balance', '$type', '$now')");
+            
+            
                 return true;
-            }
+            
         }
         return false;
     }
@@ -97,26 +87,18 @@ class Orders extends Users {
             $sql = "";
             if ($balance >= 0) {
                 $sql .= "UPDATE $this->customer_balance_table ";
-                $sql .= " SET `Balance`= :balance, ";
+                $sql .= " SET `Balance`= '$balance', ";
                 $sql .= " `UpdateDate`= '$now' ";
-                $sql .= " WHERE `CustomerId`= :user_id ";
-                $sql .= " AND `AssetTypeId`= :asset_type ";
+                $sql .= " WHERE `CustomerId`= '$user_id' ";
+                $sql .= " AND `AssetTypeId`= '$assetType' ";
                 $sql .= "LIMIT 1";
 
-                $query = $this->db_connection->prepare($sql);
-
-                if ($balance >= 0) {
-                    $query->bindParam("balance", $balance);
-                }
-                $query->bindParam("user_id", $user_id);
-                $query->bindParam("asset_type", $assetType);
-                if ($query->execute()) {
-                    $this->record_bal_history($user_id, $balance, $assetType);
-                    return true;
-                }
+                $query = $this->db_connection->query($sql);
+                $this->record_bal_history($user_id, $balance, $assetType);
+                return true;
+                
             }
-            return false;
-        }
+          }
         return false;
     }
 
@@ -158,7 +140,7 @@ class Orders extends Users {
             $this->customer_balance = $customer_bal;
 
             if ($this->customer_balance == '' || $this->customer_balance == null || !is_float($this->customer_balance)) {
-                $messages = "0 balance: Your account balance is nill.";
+                $messages = "0 balance: Your account balance is nil.";
                 $std->message = $messages;
                 $this->storeMessages($order_id=null, $this->customerId, $messages);
                 return $std;
@@ -171,17 +153,11 @@ class Orders extends Users {
                 return $std;
             }
 
-            $query = $this->db_connection->prepare("INSERT INTO $this->orders_table (`OrderId`, `CustomerId`, `OrderTypeId`, `OfferAssetTypeId`, `WantAssetTypeId`, `Quantity`, `Price`, `OrderStatusId`, `UpdateDate`, `InsertDate`, `SaveDate`)
-                                    VALUES ('', " . $this->customerId . ", :a, :e, :f, :b, :c, :d, NULL, '$now', NULL)");
+            $query = $this->db_connection->query("INSERT INTO $this->orders_table (`OrderId`, `CustomerId`, `OrderTypeId`, `OfferAssetTypeId`, `WantAssetTypeId`, `Quantity`, `Price`, `OrderStatusId`, `UpdateDate`, `InsertDate`, `SaveDate`)
+                                    VALUES ('', " . $this->customerId . ", " . $this->orderTypeId . ", '$OfferAssetTypeId', '$WantAssetTypeId', " . $this->quantity . "," . $this->price . ", " . $this->orderStatusId . ", NULL, '$now', NULL)");
 
-            $query->bindParam(':a', $this->orderTypeId, PDO::PARAM_STR);
-            $query->bindParam(':e', $OfferAssetTypeId, PDO::PARAM_STR);
-            $query->bindParam(':f', $WantAssetTypeId, PDO::PARAM_STR);
-            $query->bindParam(':b', $this->quantity, PDO::PARAM_STR);
-            $query->bindParam(':c', $this->price, PDO::PARAM_STR);
-            $query->bindParam(':d', $this->orderStatusId);
-
-            if ($query->execute()) {
+            
+            
 
                 $insertedrowid = $this->db_connection->lastInsertId();
 
@@ -219,8 +195,7 @@ class Orders extends Users {
                 $std->message = "Order moved to active table.";
 
                 return $std;
-            }
-            return null;
+            
         }
         return false;
     }
@@ -265,29 +240,17 @@ class Orders extends Users {
 
             $buy_or_sell_list = array();
 
-            $query = $this->db_connection->prepare("SELECT $this->orders_table.OrderId, $this->customers_table.CustomerId, $this->customers_table.Name, $this->orders_table.Quantity, $this->orders_table.Price, ($this->orders_table.Quantity * $this->orders_table.Price) AS TOTAL_COST,  $this->orders_table.OrderStatusid, $this->orders_table.InsertDate
+            $query = $this->db_connection->query("SELECT $this->orders_table.OrderId, $this->customers_table.CustomerId, $this->customers_table.Name, $this->orders_table.Quantity, $this->orders_table.Price, ($this->orders_table.Quantity * $this->orders_table.Price) AS TOTAL_COST,  $this->orders_table.OrderStatusid, $this->orders_table.InsertDate
                                     FROM $this->orders_table, $this->customers_table
-                                    WHERE $this->orders_table.OrderTypeId = :id
+                                    WHERE $this->orders_table.OrderTypeId = '$buy_or_sell_id'
                                     GROUP BY $this->orders_table.Price $AscDesc");
 
-            $query->bindParam("id", $buy_or_sell_id);
-
-            if ($query->execute()) {
-
                 $rowCount = $query->rowCount();
-
                 if ($rowCount > 0) {
-
                     while ($orders = $query->fetchObject()) {
-
                         $buy_or_sell_list[] = $orders;
-
                     }
                 }
-
-            } else {
-                return false;
-            }
             return $buy_or_sell_list;
         }
         return false;
@@ -295,11 +258,10 @@ class Orders extends Users {
 
     public function get_active_order_of_user($user_id, $top_table) {
         if ($this->databaseConnection()) {
-            $query = $this->db_connection->prepare("
-                SELECT * FROM $top_table WHERE `customerId`= :uid ORDER BY `insertDate` DESC 
+            $query = $this->db_connection->query("
+                SELECT * FROM $top_table WHERE `customerId`= '$user_id' ORDER BY `insertDate` DESC 
             ");
-            $query->bindParam('uid', $user_id);
-            $query->execute();
+            
 
             $arr = array();
             while ($qr = $query->fetchObject()) {
@@ -352,12 +314,9 @@ class Orders extends Users {
 
     private function updateOrderStatus($orderId=null, $status=null) {
         if ($this->databaseConnection()) {
-            $query = $this->db_connection->prepare("UPDATE ".ORDERS_TABLE." SET `OrderStatusId`= '$status' WHERE `OrderId` = :id LIMIT 1");
-            $query->bindParam("id", $orderId);
-            if ($query->execute()) {
+            $query = $this->db_connection->query("UPDATE ".ORDERS_TABLE." SET `OrderStatusId`= '$status' WHERE `OrderId` = '$orderId' LIMIT 1");
                 return true;
-            }
-        }
+       }
         return false;
     }
 
@@ -641,34 +600,20 @@ class Orders extends Users {
     private function record_transaction($buyer, $buy_order_id, $buy_amount, $buy_commission, $seller, $sell_order_id, $sell_amount, $sell_commission, $trade_qty) {
         if ($this->databaseConnection()) {
             $now = $this->time_now();
-            $query = $this->db_connection->prepare("
+            $query = $this->db_connection->query("
             INSERT INTO $this->transaction_table(`TransactionId`, `a_buyer`, `A_OrderId`, `A_Amount`, `A_Commission`, `b_seller`, `B_OrderId`, `B_Amount`, `B_Commission`, `qty_traded`, `UpdateDate`, `InsertDate`, `SaveDate`)
-            VALUES ('', :buyer,:buy_order_id, :buy_amount, :buy_commission, :seller, :sell_order_id, :sell_amount, :sell_commission, :trade_qty, NULL, '$now', '$now')
+            VALUES ('', '$buyer','$buy_order_id', '$buy_amount', '$buy_commission', '$seller', '$sell_order_id', '$sell_amount', 'sell_commission', '$trade_qty', NULL, '$now', '$now')
             ");
-            $query->bindParam("buyer", $buyer);
-            $query->bindParam("buy_order_id", $buy_order_id);
-            $query->bindParam("buy_amount", $buy_amount);
-            $query->bindParam("buy_commission", $buy_commission);
-            $query->bindParam("seller", $seller);
-            $query->bindParam("sell_order_id", $sell_order_id);
-            $query->bindParam("sell_amount", $sell_amount);
-            $query->bindParam("sell_commission", $sell_commission);
-            $query->bindParam("trade_qty", $trade_qty);
-            if($query->execute()) {
-                return true;
-            }
+                 return true;
+            
         }
         return false;
     }
 
     private function delete_order($top_table, $orderId) {
         if ($this->databaseConnection()) {
-            $query = $this->db_connection->prepare("DELETE FROM `$top_table` WHERE `orderId`=:id LIMIT 1");
-            $query->bindParam('id', $orderId);
-            if($query->execute()) {
-                return true;
-            }
-            return false;
+            $query = $this->db_connection->query("DELETE FROM `$top_table` WHERE `orderId`='$orderId' LIMIT 1");
+            return true;
         }
         return false;
     }
@@ -677,36 +622,26 @@ class Orders extends Users {
 
         if ($this->databaseConnection()) {
             $now = $this->time_now();
-            $query = $this->db_connection->prepare("
+            $query = $this->db_connection->query("
                 UPDATE $top_table
-                SET `quantity`= :qty, `insertDate`='$now'
-                WHERE orderId = :orderId
+                SET `quantity`= '$qty', `insertDate`='$now'
+                WHERE orderId = '$$orderId'
                 LIMIT 1
             ");
-            $query->bindParam('qty', $qty);
-            $query->bindParam('orderId', $orderId);
-            if($query->execute()) {
+            
                 return true;
             }
-            return false;
-        }
         return false;
     }
 
     private function insert_market_order($customerId, $orderTypeId, $OfferAssetTypeId=null, $WantAssetTypeId=null, $qty, $price) {
         if ($this->databaseConnection()) {
             $now = $this->time_now();
-            $query = $this->db_connection->prepare("INSERT INTO $this->orders_table (`OrderId`, `CustomerId`, `OrderTypeId`, `OfferAssetTypeId`, `WantAssetTypeId`, `Quantity`, `Price`, `OrderStatusId`, `MarketOrder`, `UpdateDate`, `InsertDate`, `SaveDate`)
-                                VALUES ('', :u, :a, :d, :e, :b, :c, 1, 1, NULL, '$now', NULL)
+            $query = $this->db_connection->query("INSERT INTO $this->orders_table (`OrderId`, `CustomerId`, `OrderTypeId`, `OfferAssetTypeId`, `WantAssetTypeId`, `Quantity`, `Price`, `OrderStatusId`, `MarketOrder`, `UpdateDate`, `InsertDate`, `SaveDate`)
+                                VALUES ('', '$customerId', '$orderTypeId', '$OfferAssetTypeId', '$WantAssetTypeId', '$qty', '$price', 1, 1, NULL, '$now', NULL)
                               ");
-            $query->bindParam(':u', $customerId, PDO::PARAM_INT);
-            $query->bindParam(':a', $orderTypeId, PDO::PARAM_INT);
-            $query->bindParam(':d', $OfferAssetTypeId, PDO::PARAM_STR);
-            $query->bindParam(':e', $WantAssetTypeId, PDO::PARAM_STR);
-            $query->bindParam(':b', $qty, PDO::PARAM_STR);
-            $query->bindParam(':c', $price, PDO::PARAM_STR);
-
-            if ($query->execute()) {
+            
+            
                 $insertedrowid = $this->db_connection->lastInsertId();
 
                 $trade_type = ($orderTypeId=='1') ? "sell" : "buy";
@@ -715,8 +650,6 @@ class Orders extends Users {
 
                 return (int) $insertedrowid;
             }
-            return false;
-        }
         return false;
     }
 
@@ -1260,12 +1193,12 @@ class Orders extends Users {
 
             $list = array();
 
-            $extraQuerry = "";
+            $extraQuery = "";
 
             if ($is_active != null) {
-                $extraQuerry = "WHERE ".USERS_TABLE.".is_active = 0 OR ".USERS_TABLE.".is_active = 1";
+                $extraQuery = "WHERE ".USERS_TABLE.".is_active = 0 OR ".USERS_TABLE.".is_active = 1";
             } else {
-                $extraQuerry = "WHERE ".USERS_TABLE.".is_active = 1";
+                $extraQuery = "WHERE ".USERS_TABLE.".is_active = 1";
             }
 
             $query = $this->db_connection->query("
@@ -1273,7 +1206,7 @@ class Orders extends Users {
                 (SELECT ".CREDITS_TABLE.".Balance FROM ".CREDITS_TABLE." WHERE ".CREDITS_TABLE.".AssetTypeId='btc' AND ".CREDITS_TABLE.".CustomerId=UID) AS BTC, 
                 (SELECT ".CREDITS_TABLE.".Balance FROM ".CREDITS_TABLE." WHERE ".CREDITS_TABLE.".AssetTypeId='traditional' AND ".CREDITS_TABLE.".CustomerId=UID) AS CASH 
                 FROM ".USERS_TABLE.", ".CREDITS_TABLE." 
-                $extraQuerry
+                $extraQuery
                 GROUP BY UID ORDER BY MAX(BTC) DESC
             ");
 
@@ -1308,58 +1241,49 @@ class Orders extends Users {
         if ($this->databaseConnection()) {
 
             $list = array();
-            $query = $this->db_connection->prepare("
+            $query = $this->db_connection->query("
             SELECT `OrderId`, `CustomerId`, `OrderTypeId`, `OfferAssetTypeId`, `WantAssetTypeId`, `Quantity`, `Price`, `OrderStatusId`, `MarketOrder`, `InsertDate`
             FROM ".ORDERS_TABLE."
-            WHERE `CustomerId`=:u_id
+            WHERE `CustomerId`='$user_id'
             ORDER  BY InsertDate DESC
             LIMIT $start, $limit
             ");
-            $query->bindParam('u_id', $user_id);
-            if ($query->execute()) {
+            
+            
                 if ($query->rowCount() > 0) {
                     while ($ls = $query->fetchObject()) {
                         $list[] = $ls;
                     }
                     return $list;
                 }
-            }
-            return false;
+            
         }
         return false;
     }
 
     protected function cancel_order($order_id=null, $user_id=null) {
         if ($this->databaseConnection()) {
-            $query = $this->db_connection->prepare("
-                DELETE FROM ".TOP_BUYS_TABLE." WHERE `orderId`=:id AND customerId = :cus_id;
-                DELETE FROM ".TOP_SELL_TABLE." WHERE `orderId`=:id AND customerId = :cus_id
+            $query = $this->db_connection->query("
+                DELETE FROM ".TOP_BUYS_TABLE." WHERE `orderId`=:'$order_id' AND customerId = '$user_id';
+                DELETE FROM ".TOP_SELL_TABLE." WHERE `orderId`=:'$order_id' AND customerId = '$user_id'
             ");
 
-            $query->bindParam('id', $order_id);
-            $query->bindParam('cus_id', $user_id);
-
-            $query->execute();
             unset($query); // Unset the query
 
-            $q = $this->db_connection->prepare("
+            $q = $this->db_connection->query("
                     UPDATE ".ORDERS_TABLE." SET `OrderStatusId`= 0 
-                    WHERE `OrderId` = :ord
-                    AND CustomerId = :cust_id
+                    WHERE `OrderId` = '$order_id'
+                    AND CustomerId = '$user_id'
                   ");
-            $q->bindParam('ord', $order_id);
-            $q->bindParam('cust_id', $user_id);
-
-            $q->execute();
             unset($q);
 
-            $query2 = $this->db_connection->prepare("
-                        SELECT * FROM ".TOP_BUYS_TABLE." WHERE `orderId`=:o_id;
-                        SELECT * FROM ".TOP_SELL_TABLE." WHERE `orderId`=:o_id
+            $query2 = $this->db_connection->query("
+                        SELECT * FROM ".TOP_BUYS_TABLE." WHERE `orderId`='$order_id';
+                        SELECT * FROM ".TOP_SELL_TABLE." WHERE `orderId`='$order_id'
                     ");
-            $query2->bindParam('o_id', $order_id);
+            
 
-            if ($query2->execute()) {
+            
                 if ($query2->rowCount() == 0) {
                     if ($_SESSION['user_id']==ADMIN_ID) {
                         $this->storeMessages($order_id, ADMIN_ID, $msg="Order number $order_id was deleted by user id ".ADMIN_ID);
@@ -1369,7 +1293,7 @@ class Orders extends Users {
                     }
                     return true; // This means row was actually deleted
                 }
-            }
+            
         }
         return false;
     }
@@ -1409,18 +1333,12 @@ class Orders extends Users {
             }
             $username = $this->get_username($user_id);
 
-            $query = $this->db_connection->prepare("
+            $query = $this->db_connection->query("
                 INSERT INTO ".MSG_TABLE."(`id`, `order_id`, `username_key`, `username`, `messages`, `datetime`) 
-                VALUES ('', :order_id, :user_id, :username, :msg, '$now')
+                VALUES ('', '$order_id', '$user_id', '$username', '$msg', '$now')
             ");
-            $query->bindParam("order_id", $order_id);
-            $query->bindParam("user_id", $user_id);
-            $query->bindParam("username", $username);
-            $query->bindParam("msg", $msg);
-
-            if ($query->execute()) {
-                return true;
-            }
+            
+            return true;
         }
         return false;
     }
@@ -1438,16 +1356,16 @@ class Orders extends Users {
             } else {
                 return $my_total_messages;
             }
-            $query = $this->db_connection->prepare("
+            $query = $this->db_connection->query("
                 SELECT COUNT(*) AS MY_TOTAL_MESSAGES
                 FROM ".MSG_TABLE."
-                WHERE `username_key`=:u_id
+                WHERE `username_key`=:'$user_id'
             ");
-            $query->bindParam('u_id', $user_id);
-            if ($query->execute()) {
+            
+            
                 $fetch = $query->fetchObject();
                 $my_total_messages = (int) $fetch->MY_TOTAL_MESSAGES;
-            }
+            
             return $my_total_messages;
         }
         return false;
@@ -1462,16 +1380,16 @@ class Orders extends Users {
             } else {
                 return $my_total_orders;
             }
-            $query = $this->db_connection->prepare("
+            $query = $this->db_connection->query("
                 SELECT COUNT(*) AS MY_TOTAL_ORDERS
                 FROM ".ORDERS_TABLE."
-                WHERE `CustomerId`=:u_id
+                WHERE `CustomerId`='$user_id'
             ");
-            $query->bindParam('u_id', $user_id);
-            if ($query->execute()) {
+            
+            
                 $fetch = $query->fetchObject();
                 $my_total_orders = (int)$fetch->MY_TOTAL_ORDERS;
-            }
+            
             return $my_total_orders;
         }
         return false;
@@ -1486,16 +1404,16 @@ class Orders extends Users {
             } else {
                 return $my_total_orders;
             }
-            $query = $this->db_connection->prepare("
+            $query = $this->db_connection->query("
                 SELECT COUNT(*) AS MY_TOTAL_ORDERS
                 FROM ".TRANSACTIONS_TABLE."
-                WHERE `a_buyer`= :u_id OR `b_seller`= :u_id
+                WHERE `a_buyer`= '$user_id' OR `b_seller`= '$user_id'
             ");
-            $query->bindParam('u_id', $user_id);
-            if ($query->execute()) {
+            
+            
                 $fetch = $query->fetchObject();
                 $my_total_orders = (int)$fetch->MY_TOTAL_ORDERS;
-            }
+            
             return $my_total_orders;
         }
         return false;
@@ -1506,14 +1424,14 @@ class Orders extends Users {
         if ($this->databaseConnection()) {
             $total_orders = 0;
 
-            $query = $this->db_connection->prepare("
+            $query = $this->db_connection->query("
                 SELECT COUNT(*) AS TOTAL_ORDERS
                 FROM ".TRANSACTIONS_TABLE."
             ");
-            if ($query->execute()) {
+            
                 $fetch = $query->fetchObject();
                 $total_orders = (int)$fetch->TOTAL_ORDERS;
-            }
+            
             return $total_orders;
         }
         return false;
@@ -1521,19 +1439,17 @@ class Orders extends Users {
 
     private function isUserOrderOwner($order_id=0, $user_id=0) {
         if ($this->databaseConnection()) {
-            $query = $this->db_connection->prepare("
+            $query = $this->db_connection->query("
                 SELECT `OrderId` FROM ".ORDERS_TABLE." 
-                WHERE `OrderId`=:o_id 
-                AND `CustomerId`=:c_id
+                WHERE `OrderId`='$order_id' 
+                AND `CustomerId`='$user_id'
                 LIMIT 1
             ");
-            $query->bindParam('o_id', $order_id);
-            $query->bindParam('c_id', $user_id);
-            if ($query->execute()) {
+            
                 if ($query->rowCount()==1) {
                     return true;
                 }
-            }
+            
         }
         return false;
     }
@@ -1548,22 +1464,15 @@ class Orders extends Users {
     public function add_bank_account($user_id, $holder, $bank_name, $account_num, $branch_name, $bank_addr, $bk_ctry) {
         if ($this->databaseConnection()) {
             $now = $this->time_now();
-            $query = $this->db_connection->prepare(
+            $query = $this->db_connection->query(
                 "INSERT INTO $this->bank_acc(`id`, `user_id`, `acc_holder`, `bank_name`, `acc_num`, `branch_name`, `bank_addr`, `bank_ctry`, `date_added`) 
-                 VALUES ('', :uid, :holder, :bk_name, :acc_num, :br_name, :addr, :ctry, '$now')"
+                 VALUES ('', '$user_id', '$holder', '$bank_name', '$account_num', '$branch_name', '$bank_addr', '$bk_ctry', '$now')"
             );
-            $query->bindParam("uid", $user_id);
-            $query->bindParam("holder", $holder);
-            $query->bindParam("bk_name", $bank_name);
-            $query->bindParam("acc_num", $account_num);
-            $query->bindParam("br_name", $branch_name);
-            $query->bindParam("addr", $bank_addr);
-            $query->bindParam("ctry", $bk_ctry);
-
-            if ($query->execute()) {
+            
+            
                 $this->storeMessages(null, $user_id, $msg="You added a new bank account number $account_num.");
                 return true;
-            }
+            
         }
         return false;
     }
@@ -1583,18 +1492,13 @@ class Orders extends Users {
 
             $ex = "";
             if ($acc != null) {
-                $ex = "AND `acc_num`=:acc";
+                $ex = "AND `acc_num`='$acc'";
             }
 
-            $query = $this->db_connection->prepare(
-                "SELECT * FROM $this->bank_acc WHERE `user_id`=:uid $ex"
+            $query = $this->db_connection->query(
+                "SELECT * FROM $this->bank_acc WHERE `user_id`='$user_id' $ex"
             );
-            $query->bindParam("uid", $user_id);
-            if ($acc != null) {
-                $query->bindParam("acc", $acc);
-            }
-            $query->execute();
-
+            
             if ($query->rowCount() > 0) {
                 while ($acc_info = $query->fetchObject()) {
                     $acc_details[] = $acc_info;
@@ -1622,21 +1526,14 @@ class Orders extends Users {
 
             $sign = ($assetType == 'btc') ? 'RTM':'$';
 
-            $query = $this->db_connection->prepare(
+            $query = $this->db_connection->query(
                 "INSERT INTO ".TRANSFER_INFO_TABLE."(`id`, `user_id`, `fund_type`, `tr_from`, `tr_to`, `fund_amount`, `remarks`, `datetime`) 
-                 VALUES('', :uid, :fund_type, :tr_from, :tr_to, :tr_amount, :remarks, '$now')"
+                 VALUES('', '$user_id', '$fund_type', '$from', '$to', '$amount', '$remarks', '$now')"
             );
-            $query->bindParam('uid', $user_id);
-            $query->bindParam('fund_type', $fund_type);
-            $query->bindParam('tr_from', $from);
-            $query->bindParam('tr_to', $to);
-            $query->bindParam('tr_amount', $amount);
-            $query->bindParam('remarks', $remarks);
-
-            if ($query->execute()) {
+                       
                 $this->storeMessages(null, $user_id, $msg="You have requested to transfer $sign $amount to bank account number $to.");
                 return true;
-            }
+            
         }
         return false;
     }
@@ -1645,19 +1542,14 @@ class Orders extends Users {
         if ($this->databaseConnection()) {
             $now = $this->time_now();
             $root = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0;
-            $query = $this->db_connection->prepare("
+            $query = $this->db_connection->query("
                 INSERT INTO ".ADMIN_BAL_RECORDS."(`BalStatusHistoryId`, `user_id`, `bal_prev`, `bal_now`, `type`, `root_id`, `UpdateDate`) 
-                VALUES ('', :uid, :prev, :now, :btype, :root, '$now')
+                VALUES ('', '$uid', '$bal_prev', '$bal_now', '$bal_type', '$root', '$now')
             ");
-            $query->bindParam("uid", $uid);
-            $query->bindParam("prev", $bal_prev);
-            $query->bindParam("now", $bal_now);
-            $query->bindParam("btype", $bal_type);
-            $query->bindParam("root", $root);
-
-            if ($query->execute()) {
+            
+            
                 return true;
-            }
+            
         }
         return false;
     }
@@ -1665,14 +1557,14 @@ class Orders extends Users {
     public function list_root_bal_changes() {
         if ($this->databaseConnection()) {
             $list_details = array();
-            $query = $this->db_connection->prepare(" 
+            $query = $this->db_connection->query(" 
                 SELECT ".ADMIN_BAL_RECORDS.".*, ".USERS_TABLE.".Name, ".USERS_TABLE.".Email 
                 FROM ".ADMIN_BAL_RECORDS.", ".USERS_TABLE." 
                 WHERE ".ADMIN_BAL_RECORDS.".user_id=".USERS_TABLE.".CustomerId
                 ORDER BY UpdateDate DESC
                 LIMIT 200
             ");
-            $query->execute();
+            
 
             if ($query->rowCount() > 0) {
                 while ($list = $query->fetchObject()) {
@@ -1697,13 +1589,13 @@ class Orders extends Users {
     public function delete_orders_of_user($user_id=null) {
         if ($this->databaseConnection()) {
             $order_ids = array();
-            $query = $this->db_connection->prepare("
-            SELECT orderId FROM ".TOP_BUYS_TABLE." WHERE `customerId`=:uid
+            $query = $this->db_connection->query("
+            SELECT orderId FROM ".TOP_BUYS_TABLE." WHERE `customerId`='$user_id'
             UNION
-            SELECT orderId FROM ".TOP_SELL_TABLE." WHERE `customerId`=:uid
+            SELECT orderId FROM ".TOP_SELL_TABLE." WHERE `customerId`='$user_id'
             ");
-            $query->bindParam('uid', $user_id);
-            $query->execute();
+            
+            
             if ($query->rowCount() > 0) {
                 while ($rr = $query->fetchObject()) {
                     $order_ids[] = $rr;
