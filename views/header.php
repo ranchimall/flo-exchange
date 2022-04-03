@@ -54,7 +54,7 @@ $_SESSION['rand'] = rand();
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://ranchimall.github.io/Standard_Operations/lib.js"></script>
+    <script src="https://ranchimall.github.io/Standard_Operations/floCrypto.js"></script>
 
     <script src="<?=JS_DIR?>/notify.js"></script>
 
