@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
- * Date: 10/3/2017
- * Time: 5:07 PM
- */
-
 if (isset($tradersList) && is_array($tradersList) && !empty($tradersList)) { ?>
 
     <div class="container-fluid p--2 background-white-1 mt--4">
