@@ -27,17 +27,17 @@ if (isset($_SESSION['flo_id'], $_SESSION['user_id'])) {
         } else {
             return false;
         }
-        if (isset($OrderClass, $UserClass)) {
+        
 
             if ($u_id_str == "off") {
-                $del_ord = $OrderClass->delete_orders_of_user($u_id_int);
+                $del_ord = delete_orders_of_user($u_id_int);
             }
-            $act_user = $UserClass->actions_user($u_id_int, $act);
+            $act_user = actions_user($u_id_int, $act);
 
             if ($act_user) {
                 echo $u_id_str;
             }
-        }
+        
         return false;
     }
 
