@@ -1,13 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * Date: 10/21/2017
- * Time: 3:36 PM
- */
-
 if($user_logged_in):
     $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-    $accounts = $OrderClass->get_bank_details($user_id);
+    $accounts = get_bank_details($user_id);
     ?>
     <div class="container-fluid background-white-1 mt--4 p--2">
         <div class="container">
