@@ -19,7 +19,7 @@ if (isset($_POST['job']) && trim($_POST['job']) == "pay_in_btc") {
 
         if (empty($balance_to_transfer) || empty($btc_addr)) {
             $mess = "E2BTC error: Please fill all the required fields!";
-            $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+            storeMessagesPublic(null, $user_id, $mess);
             $std->mesg[] = $mess;
             $std->error = true;
             echo json_encode($std);
@@ -28,7 +28,7 @@ if (isset($_POST['job']) && trim($_POST['job']) == "pay_in_btc") {
 
         if ((!preg_match("/^[a-zA-Z0-9]+$/", $btc_addr) == 1) || strlen(trim($btc_addr)) !== 34) {
             $mess = "E2BTC error: Invalid Bitcoin address!";
-            $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+            storeMessagesPublic(null, $user_id, $mess);
             $std->mesg[] = $mess;
             $std->error = true;
             echo json_encode($std);
@@ -37,7 +37,7 @@ if (isset($_POST['job']) && trim($_POST['job']) == "pay_in_btc") {
 
         if (strlen($remarks) > 250) {
             $mess = "E2BTC error: Remarks up to 250 characters allowed only!";
-            $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+            storeMessagesPublic(null, $user_id, $mess);
             $std->mesg[] = $mess;
             $std->error = true;
             echo json_encode($std);
@@ -46,18 +46,18 @@ if (isset($_POST['job']) && trim($_POST['job']) == "pay_in_btc") {
 
         if (!preg_match("/^[a-zA-Z0-9 \r\n]*$/",$remarks)) {
             $mess = "E2BTC error: Only alphanumeric characters allowed in Remarks!";
-            $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+            storeMessagesPublic(null, $user_id, $mess);
             $std->mesg[] = $mess;
             $std->error = true;
             echo json_encode($std);
             return false;
         }
 
-        $validate_user = $UserClass->check_user($user_id);
+        $validate_user = check_user($user_id);
 
         if($validate_user == "" || empty($validate_user)) {
             $mess = "E2BTC error: No such user exist. Please login again.";
-            $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+            storeMessagesPublic(null, $user_id, $mess);
             $std->error = true;
             $std->mesg[] = $mess;
             echo json_encode($std);
@@ -68,21 +68,21 @@ if (isset($_POST['job']) && trim($_POST['job']) == "pay_in_btc") {
 
         if ($senders_email == null || !is_email($senders_email)) {
             $mess = "E2BTC error: Invalid email format!";
-            $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+            storeMessagesPublic(null, $user_id, $mess);
             $std->mesg[] = $mess;
             $std->error = true;
             echo json_encode($std);
             return false;
         }
 
-        $customer_bal = (float) $OrderClass->check_customer_balance($assetType="traditional", $user_id)->Balance;
+        $customer_bal = (float) check_customer_balance($assetType="traditional", $user_id)->Balance;
 
         if ($balance_to_transfer > $customer_bal) {
             $mess = "E2BTC transaction failed: You have insufficient balance to make this transfer. Your current Cash balance is $ $customer_bal.";
             $std->error = true;
             $std->mesg[] = $mess;
             echo json_encode($std);
-            $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+            storeMessagesPublic(null, $user_id, $mess);
             return false;
         }
 
@@ -93,7 +93,7 @@ if (isset($_POST['job']) && trim($_POST['job']) == "pay_in_btc") {
         $WantAssetTypeId = 'RMT';
         $assetType = 'traditional';
         $allowed_bid_amount = $customer_bal;
-        $user_active_orders = $OrderClass->get_active_order_of_user($user_id, TOP_BUYS_TABLE);
+        $user_active_orders = get_active_order_of_user($user_id, TOP_BUYS_TABLE);
         $frozen_bal_buys = 0;
         if (is_array($user_active_orders) && !empty($user_active_orders)) {
             foreach ($user_active_orders as $uao) {
@@ -108,7 +108,7 @@ if (isset($_POST['job']) && trim($_POST['job']) == "pay_in_btc") {
         }
 
         if ($frozen_bal_buys + $balance_to_transfer > $customer_bal) {
-            $OrderClass->storeMessagesPublic(null, $user_id, $msss);
+            storeMessagesPublic(null, $user_id, $msss);
             $std->error = true;
             $std->mesg[] = $msss;
             echo json_encode($std);
@@ -137,7 +137,7 @@ if (isset($_POST['job']) && trim($_POST['job']) == "pay_in_btc") {
                         <p>AMOUNT TO TRANSFER: <strong>$ $balance_to_transfer</strong> (DO NOT SEND MORE THAN $ $allowed_bid_amount.)</p>
                         <p>EMAIL: $senders_email</p> 
                         <p>REMARKS: <strong>".$remarks."</strong></p>  
-                        <p>SENDER FLO ID: ".$flo_id."</p>
+                        <p>SENDER FB ID: ".$flo_id."</p>
                         </div>
                         <footer>
                         <p>Thank You</p>
@@ -146,23 +146,23 @@ if (isset($_POST['job']) && trim($_POST['job']) == "pay_in_btc") {
                         </footer>
                         </div>";
 
-        $send_mail = $OrderClass->send_notice_mail($reciever_email, $email_from, $email_sender, $email_subject, $email_body);
+        $send_mail = send_notice_mail($reciever_email, $email_from, $email_sender, $email_subject, $email_body);
         $transfer_funds = null;
         if($send_mail) {
             /*Transfer funds from site to bank account*/
-            $transfer_funds = $OrderClass->fund_transfer($fund_type="E2BTC", $from="Exchange", $to=$btc_addr, $balance_to_transfer, $remarks, $assetType = 'traditional');
+            $transfer_funds = fund_transfer($fund_type="E2BTC", $from="Exchange", $to=$btc_addr, $balance_to_transfer, $remarks, $assetType = 'traditional');
         }
 
         if ($transfer_funds) {
             $mess = "E2BTC Transaction Success: Please check your mail to approve this request.";
-            $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+            storeMessagesPublic(null, $user_id, $mess);
             $std->error = false;
             $std->mesg[] = $mess;
             $std->user = $validate_user;
 
         } else {
             $mess = "E2BTC error: Mail could not be sent. Try again.";
-            $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+            storeMessagesPublic(null, $user_id, $mess);
             $std->error = true;
             $std->mesg[] = $mess;
             $std->user = $validate_user;
