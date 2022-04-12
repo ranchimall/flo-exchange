@@ -25,7 +25,7 @@ if (isset($_POST['job'])) {
 
             if (empty($btc_today)) {
                 $mess[] = "BTC2CASH Error: Something went wrong. Please refresh the page and try again.";
-                $OrderClass->storeMessagesPublic(null, $user_id, $mess." Failed to fetch price of 1 bitcoin today.");
+                storeMessagesPublic(null, $user_id, $mess." Failed to fetch price of 1 bitcoin today.");
                 $std->mesg[] = $mess;
                 echo json_encode($std);
                 return false;
@@ -33,7 +33,7 @@ if (isset($_POST['job'])) {
 
             if (empty($amount_to_load) || empty($equivalent_btc)) {
                 $mess[] = "BTC2CASH Error: Please fill all the required fields.";
-                $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+                storeMessagesPublic(null, $user_id, $mess);
                 $std->mesg[] = $mess;
                 echo json_encode($std);
                 return false;
@@ -43,7 +43,7 @@ if (isset($_POST['job'])) {
 
             if($validate_user == "" || empty($validate_user)) {
                 $mess = "BTC2CASH error: No such user exist. Please login again.";
-                $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+                storeMessagesPublic(null, $user_id, $mess);
                 $std->error = true;
                 $std->mesg[] = $mess;
                 echo json_encode($std);
@@ -54,7 +54,7 @@ if (isset($_POST['job'])) {
 
             if (!is_email($email_id)) {
                 $mess = "BTC2CASH error: Please provide a valid email id!";
-                $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+                storeMessagesPublic(null, $user_id, $mess);
                 $std->mesg[] = $mess;
                 $std->error = true;
                 echo json_encode($std);
@@ -64,7 +64,7 @@ if (isset($_POST['job'])) {
             if (strlen($remarks) > 250) {
                 $mess = "BTC2CASH error: Remarks up to 250 characters allowed only!";
                 $std->mesg[] = $mess;
-                $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+                storeMessagesPublic(null, $user_id, $mess);
                 $std->error = true;
                 echo json_encode($std);
                 return false;
@@ -73,7 +73,7 @@ if (isset($_POST['job'])) {
             if (!preg_match("/^[a-zA-Z0-9 \r\n]*$/", $remarks)) {
                 $mess = "BTC2CASH error: Only alphanumeric characters are allowed in remarks!";
                 $std->mesg[] = $mess;
-                $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+                storeMessagesPublic(null, $user_id, $mess);
                 echo json_encode($std);
                 return false;
             }
@@ -103,12 +103,12 @@ if (isset($_POST['job'])) {
                         </footer>
                         </div>";
 
-            $send_mail = $OrderClass->send_notice_mail($reciever_email, $email_from, $email_sender, $email_subject, $email_body);
+            $send_mail = send_notice_mail($reciever_email, $email_from, $email_sender, $email_subject, $email_body);
 
             if($send_mail) {
                 //$mess = "BTC2CASH Request: You sent a request to deposit BTC $equivalent_btc to Ranchi Mall to receive $ $amount_to_load. You will receive an email from Ranchi Mall. Please follow the instructions provided in that email.";
                 $mess = "BTC2CASH Request: You sent a request to deposit BTC $equivalent_btc to Ranchi Mall to receive $ $amount_to_load. Please send the Bitcoins to address provided in the 'Load Cash to my trading account' tab below.";
-                $OrderClass->storeMessagesPublic(null, $user_id, $mess);
+                storeMessagesPublic(null, $user_id, $mess);
                 $std->error = false;
                 $std->mesg[] = $mess;
             }
