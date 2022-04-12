@@ -1,9 +1,9 @@
 <?php ob_start(); date_default_timezone_set('Asia/Kolkata'); ?>
 <?php $user_id = 0; ?>
     <!--Bootstrap-->
-<?php require_once 'includes/imp_files.php';
-      require_once 'views/header.php';
-?>
+<?php 
+require_once 'includes/imp_files.php';
+require_once 'views/header.php';?>
 
 <?php
 
@@ -13,10 +13,10 @@
         redirect_to("index.php");
     }
 
-    if (isset($_SESSION['flo_id'], $_SESSION['user_id'])) {
-        $root_flo = $_SESSION['flo_id'];
-        $root_user_id = $_SESSION['user_id'];
-        
+    if (isset($_SESSION['flo_id'], $_SESSION['user_id'], $_SESSION['user_name'])) {
+        $root_flo = (string) $_SESSION['flo_id'];
+        $root_user_id = (int) $_SESSION['user_id'];
+       
 
         /*This should match ajax/rm_root.php too*/
         if ($root_flo != ADMIN_FLO_ID && $root_user_id != ADMIN_ID) {
@@ -44,7 +44,7 @@
                     return false;
                 }
 
-                $validate_user = $UserClass->check_user($investor_id);
+                $validate_user = check_user($investor_id);
 
 
                 if($validate_user == "" || empty($validate_user)) {
@@ -81,9 +81,9 @@
                 }
                 
                 //Prev balance of user
-                $bal_prev = (float) $OrderClass->check_customer_balance($assetType, $investor_id)->Balance;
+                $bal_prev = (float) check_customer_balance($assetType, $investor_id)->Balance;
 
-                $update_bal = $OrderClass->update_user_balance($assetType, $balance, $investor_id);
+                $update_bal = update_user_balance($assetType, $balance, $investor_id);
 
                 if (!$update_bal) {
                     redirect_to("rm_root.php?msg=Failed to update balance!");
@@ -103,7 +103,7 @@
             }
         }
 
-        $traders = $OrderClass->UserBalanceList(1);
+        $traders = UserBalanceList(1);
 
          ?>
 
@@ -205,7 +205,7 @@
             <div class="container mt--2">
             <div class="table-responsive">
                 <div class="table-responsive">
-            <?php $list_bal_changes = $OrderClass->list_root_bal_changes(); ?>
+            <?php $list_bal_changes = list_root_bal_changes(); ?>
                     <h2>Update History</h2>
                     <input type="text" id="audit_input" onkeyup="search_audit_table()" placeholder="Search for names or id..">
                     <table class="table" id="audit_table">
