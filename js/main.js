@@ -9,6 +9,7 @@ $(document).ready(function() {
     MyTransactions();
     load_messages();
     run_OrderMatcingAlgorithm();
+    load_fresh_table_data();
 
     $('[data-toggle="popover"]').popover();
 });
@@ -217,6 +218,9 @@ function get_my_balance() {
 
     });
 }
+
+
+
 
 // function to check if JSON data is array or not
 function isArray(what) {
