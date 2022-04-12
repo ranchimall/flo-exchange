@@ -53,10 +53,11 @@ $std->error = true;
             $floID = $_POST['floID'];
             $pubKey = $_POST['floPubKey'];
             $s_id = $_SESSION['session_id'];
+            $s_id_time_rand = $_SESSION['session_id'] . round(time()/1000)*1000 . $_SESSION['rand'];
             $signDataWithFlo = $_POST['signDataWithFlo'];
     
     
-            $data_array =  array( "floID"        => $floID, "pubKey" => $pubKey, "message" => $s_id, "sign" => $signDataWithFlo  );
+            $data_array =  array( "floID"        => $floID, "pubKey" => $pubKey, "message" => $s_id_time_rand, "sign" => $signDataWithFlo  );
             $make_call = callAPI('POST', 'https://flo-sign-validator.duckdns.org', json_encode($data_array));
             $response = json_decode($make_call, true);
     
@@ -75,12 +76,12 @@ $std->error = true;
 
 //Now  I need to enter public key and session ID in database .. but first I need to know the username 
 // This check can be suspended here. If the user has correct FLO signature, but does not exist in database, he will fail the gate at acc_deact.php
-                if (isset($UserClass)) { 
-                    $permitted_status = $UserClass->checkIfFloIDPermitted($floID);
+                 
+                    $permitted_status = checkIfFloIDPermitted($floID);
                     if ($permitted_status == true){
-                    $UserClass->update_flo_details($floID, $s_id, $pubKey);
+                    update_flo_details($floID, $s_id, $pubKey);
                     
-                    $userDetails = $UserClass->getUserDetails($floID);
+                    $userDetails = getUserDetails($floID);
                     $_SESSION['user_id'] = $userDetails->CustomerId;
                     $_SESSION['user_name'] = $userDetails->Name;
                     $_SESSION['email'] = $userDetails->Email;
@@ -92,18 +93,18 @@ $std->error = true;
                     echo json_encode($std);
                     return true;
                     } else { 
-                        if (($UserClass->check_flo_id_registration_status($floID) == true) && ($UserClass->check_flo_id_active_status($floID) != true)) {
+                        if ((check_flo_id_registration_status($floID) == true) && (check_flo_id_active_status($floID) != true)) {
                             $std->message[] = "FLO ID is not active. Please contact RanchiMall Team. ";
                             $std->error = true;
                             echo json_encode($std);
                             return false; }
-                        if ($UserClass->check_flo_id_registration_status($floID) != true ) {
+                        if (check_flo_id_registration_status($floID) != true ) {
                             $std->message[] = "Your FLO ID is not registered. Please contact RanchiMall Team and get yourself registered.";
                             $std->error = true;
                             echo json_encode($std);
                             return false; }    
                     }     
-                }
+                
             
             }
             
@@ -120,3 +121,6 @@ $std->error = true;
     echo json_encode($std);
     return false;
 }
+
+
+
