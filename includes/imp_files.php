@@ -9,6 +9,9 @@ require_once 'defines.php';
 require_once 'config.php';
 include_once 'autoload.php';
 include_once 'functions.php';
+include_once 'UsersFunc.php';
+
+$db_connection = databaseConnection();
 
 //if logged in store user DB details
 $flo_id = null;
