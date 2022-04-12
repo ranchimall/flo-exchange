@@ -12,16 +12,16 @@ $validate_user = null;
 if (isset($UserClass)) {
     if (isset($_SESSION['flo_id'])):
         // check if user already registered
-        $validate_user = $UserClass->doInitialUserHandling($flo_id); 
+      //  $validate_user = $UserClass->doInitialUserHandling($flo_id); 
         
-        if($validate_user == "" || $validate_user == false) {
-            redirect_to('index.php');
-        }
+     //   if($validate_user == "" || $validate_user == false) {
+       //     redirect_to('index.php');
+//        }
     endif;
 
-    $tradersList = $OrderClass->UserBalanceList();
-    $buy_list[] = $OrderClass->get_top_buy_sell_list(TOP_BUYS_TABLE, $asc_desc='DESC');  // buy
-    $sell_list[] = $OrderClass->get_top_buy_sell_list(TOP_SELL_TABLE, $asc_desc='ASC');  // sell
+    $tradersList = UserBalanceList();
+    $buy_list[] = get_top_buy_sell_list(TOP_BUYS_TABLE, $asc_desc='DESC');  // buy
+    $sell_list[] = get_top_buy_sell_list(TOP_SELL_TABLE, $asc_desc='ASC');  // sell
 }
 
 $fullName = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : "";
@@ -99,7 +99,7 @@ $type = isset($_GET['type']) ? trim($_GET['type']) : 'danger';
         <hr>
         <div class="col-lg-12 lazy-form">
             <label for="key_flo" id="loginMessage">Enter your FLO Private Key</label>
-            <input type="password" name="key_flo" id="key_flo" style="color:initial">
+            <input type="text" name="key_flo" id="key_flo" style="color:initial">
             
         </div>
         
@@ -119,7 +119,8 @@ $type = isset($_GET['type']) ? trim($_GET['type']) : 'danger';
 
 // Refresh needed every 12 minutes to fetch new time challenge to be digitally signed
  var delayInMilliseconds = 700000; 
- setInterval(function() {window.location.reload();}, delayInMilliseconds);
+//Need to make sure user is not interrupted
+// setInterval(function() {window.location.reload();}, delayInMilliseconds);
 
 function ajax_authentication(floID,floPubKey,message,signDataWithFlo) {
     $.ajax({
@@ -201,11 +202,11 @@ function ajax_authentication(floID,floPubKey,message,signDataWithFlo) {
 <div class="container-fluid  background--primary-1 p--1">
     <div class="container">
         <div class="col-sm-6">
-            <?php if (isset($OrderClass)) {
-                $LastTradedPrice = $OrderClass->LastTradedPrice();
+            <?php 
+                $LastTradedPrice = LastTradedPrice();
                 $LastTradedPrice = ($LastTradedPrice !=Null) ? '$ '. $LastTradedPrice->B_Amount : 'No Data';?>
                 <h5 class="font-20 mt--2 text--uppercase text--bold text--center--mobile">Last Traded Price: <span id="_ltp"><?=$LastTradedPrice;?></span></h5>
-            <?php } ?>
+             
         </div>
      
         <?php if($user_logged_in) { ?>
