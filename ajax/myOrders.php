@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
- * Date: 9/27/2017
- * Time: 3:22 PM
- */
-
 require_once '../includes/imp_files.php';
 
 if (!checkLoginStatus()) {
@@ -15,9 +8,9 @@ if (!checkLoginStatus()) {
 if (isset($_POST['task']) && trim($_POST['task'])=='loadMyOrdersList') {
 
     $iter = "";
-    if (isset($OrderClass, $user_id)) {
+    if (isset($user_id)) {
 
-    $myOrders = $OrderClass->UserOrdersList($user_id, 0, 10);
+    $myOrders = UserOrdersList($user_id, 0, 10);
 
     if (is_array($myOrders) && !empty($myOrders)) {
 
