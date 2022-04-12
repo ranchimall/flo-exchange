@@ -3,16 +3,16 @@ if (!isset($user_id)) {
     $user_id = $_SESSION['user_id'];
 }
 if (!isset($user_email)) {
-    $user_email = $_SESSION['flo_id'];
+    $user_email = $_SESSION['email'];
 }
 if (!isset($log_fullName)) {
     $log_fullName = $_SESSION['flo_id'];
 }
 if (($user_email == null) && ($user_logged_in == true)) {
 
-    if (isset($_POST['user_em_id'], $UserClass) && is_email($_POST['user_em_id'])) {
+    if (isset($_POST['user_em_id']) && is_email($_POST['user_em_id'])) {
         $email = trim($_POST['user_em_id']);
-        $updateEmail = $UserClass->input_user_email($email, $user_id);
+        $updateEmail = input_user_email($email, $user_id);
         if ($updateEmail) {
             redirect_to("index.php?msg=Email updated as $email successfully.&type=success");
         }
