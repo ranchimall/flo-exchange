@@ -1,4 +1,5 @@
 <?php 
+
 ob_start();
 if(!isset($_SESSION['session_id'])) {
     session_start();
@@ -11,7 +12,7 @@ date_default_timezone_set('Asia/Kolkata'); ?>
 <?php require_once "includes/imp_files.php";?>
 
 <?php require_once 'views/header.php';?>
-<?php //echo $OrderClass->get_username(3);die; ?>
+
 <?php include_once 'acc_deact.php';?>
 
 <!--Buy Sell div-->
