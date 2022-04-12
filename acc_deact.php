@@ -2,7 +2,7 @@
     <?php
     if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != null) {
 
-        $is_activated = $UserClass->check_user($_SESSION['user_id']);
+        $is_activated = check_user($_SESSION['user_id']);
         if(!$is_activated) { ?>
             <div class="container">
                 <div class="row">
