@@ -42,7 +42,7 @@ if ($user_logged_in) { ?>
                         </thead>
                         <tbody id="my-transactions-list"></tbody>
                         <?php if(isset($user_id) && $user_id !=null) {
-                            $MyTransactions = $OrderClass->displayUserTransaction($user_id, 0, 10);?>
+                            $MyTransactions = displayUserTransaction($user_id, 0, 10);?>
                             <?php if ($MyTransactions == null || !is_array($MyTransactions) || empty($MyTransactions)) { ?>
                             <p class="text-info">No transactions!</p>
                             <?php }} ?>
