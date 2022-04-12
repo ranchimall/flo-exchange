@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Sinha
- * Date: 11/9/2016
- * Time: 1:55 PM
- */
-
 require_once '../includes/imp_files.php';
 
 if (!checkLoginStatus()) {
@@ -66,9 +59,9 @@ if (isset($_POST['subject']) && trim($_POST['subject'])=='placeOrder') {
         $validate_user = "";
         $place_order = "";
 
-        if (isset($OrderClass, $UserClass, $user_id)) {
+        if (isset($user_id)) {
 
-            $validate_user = $UserClass->check_user($user_id);
+            $validate_user = check_user($user_id);
 
             if($validate_user == "" || empty($validate_user)) {
                 $std->error = true;
@@ -77,12 +70,12 @@ if (isset($_POST['subject']) && trim($_POST['subject'])=='placeOrder') {
                 return false;
             }
 
-            $user_current_bal = (float) $OrderClass->check_customer_balance($assetType, $user_id)->Balance;
+            $user_current_bal = (float) check_customer_balance($assetType, $user_id)->Balance;
 
             $top_tbl = null;
             if ($orderTypeId == 0) {
                 $top_tbl = TOP_BUYS_TABLE;
-                $user_active_orders = $OrderClass->get_active_order_of_user($user_id, $top_tbl);
+                $user_active_orders = get_active_order_of_user($user_id, $top_tbl);
 
                 $frozen_bal = 0;
                 if (is_array($user_active_orders) && !empty($user_active_orders)) {
@@ -103,7 +96,7 @@ if (isset($_POST['subject']) && trim($_POST['subject'])=='placeOrder') {
 
             } elseif ($orderTypeId == 1) {
                 $top_tbl = TOP_SELL_TABLE;
-                $user_active_orders = $OrderClass->get_active_order_of_user($user_id, $top_tbl);
+                $user_active_orders = get_active_order_of_user($user_id, $top_tbl);
                 $frozen_bal = 0;
                 if (is_array($user_active_orders) && !empty($user_active_orders)) {
                     foreach ($user_active_orders as $uao) {
@@ -125,7 +118,7 @@ if (isset($_POST['subject']) && trim($_POST['subject'])=='placeOrder') {
                 return false;
             }
 
-            $place_order = $OrderClass->insert_pending_order($orderTypeId, $qty, $item_price, $orderStatusId, $OfferAssetTypeId, $WantAssetTypeId);
+            $place_order = insert_pending_order($orderTypeId, $qty, $item_price, $orderStatusId, $OfferAssetTypeId, $WantAssetTypeId);
 
         } else {
             $std->error = true;
