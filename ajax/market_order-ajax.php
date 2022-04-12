@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Sinha
- * Date: 11/26/2016
- * Time: 7:10 PM
- */
-
 require_once '../includes/imp_files.php';
 
 if (!checkLoginStatus()) {
@@ -20,9 +13,9 @@ if(isset($_POST['job']) && $_POST['job'] == 'market_order') {
     $std->error = false;
     $std->msg = null;
 
-    if (isset($OrderClass, $UserClass, $user_id)) {
+    if (isset($user_id)) {
 
-        $validate_user = $UserClass->check_user($user_id);
+        $validate_user = check_user($user_id);
 
         if($validate_user == "" || empty($validate_user)) {
             $std->error = true;
@@ -58,7 +51,7 @@ if(isset($_POST['job']) && $_POST['job'] == 'market_order') {
                         return false;
                     }
 
-                    $run_market_order = $OrderClass->market_order($order_type, $qty);
+                    $run_market_order = market_order($order_type, $qty);
 
                     $std->user = $validate_user;
                     $std->order = $run_market_order;
