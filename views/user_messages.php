@@ -1,13 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
- * Date: 9/28/2017
- * Time: 4:58 PM
- */
-
-?>
-<?php
     if($user_logged_in) {?>
 <div class="container-fluid background-white-1 mt--4 p--2">
     <div class="container">
