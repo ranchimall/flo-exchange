@@ -1,16 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Sinha
- * Date: 11/16/2016
- * Time: 8:36 PM
- */
 
 require_once '../includes/imp_files.php';
 
 if (!checkLoginStatus()) {
     return false;
 }
+
 if (isset($_POST['task']) && trim($_POST['task'])=='get_my_balance') {
 
     $std = new stdClass();
@@ -20,14 +15,14 @@ if (isset($_POST['task']) && trim($_POST['task'])=='get_my_balance') {
     $std->message = array();
     $std->error = true;
 
-    if (isset($OrderClass, $UserClass, $user_id)) {
+    if (isset($user_id)) {
 
-        $UserClass = new Users();
-        $validate_user = $UserClass->check_user($user_id);
-
-        $OrderClass = new Orders();
-        $cash_balance = $OrderClass->check_customer_balance($assetType = 'traditional', $user_id)->Balance;
-        $bit_balance = $OrderClass->check_customer_balance($assetType = 'btc', $user_id)->Balance;
+        
+        $validate_user = check_user($user_id);
+        
+        
+        $cash_balance = check_customer_balance($assetType = 'traditional', $user_id)->Balance;
+        $bit_balance = check_customer_balance($assetType = 'btc', $user_id)->Balance;
 
         $std->users = $validate_user;
         $std->cash = round_it($cash_balance, 2);
