@@ -1,4 +1,4 @@
-<?php if(isset($loginUrl)) { ?>
+<?php if(isset($_SESSION['authenticated']) && ($_SESSION['authenticated']== true) ) { ?>
     <!-- Modal -->
     <div id="LoginModel" class="modal animated fadeInDown" role="dialog">
         <div class="modal-dialog">
@@ -10,7 +10,7 @@
                     <h4 class="modal-title">Login to continue...</h4>
                 </div>
                 <p class="">
-                    <a href="<?=$loginUrl?>"><div class="btn btn--facebook-2">Continue with Facebook</div></a>
+                    <a href="<?=$loginUrl?>"><div class="btn btn--facebook-2">Continue with FFLO Address</div></a>
                 </p>
             </div>
 
