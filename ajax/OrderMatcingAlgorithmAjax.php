@@ -1,18 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Sinha
- * Date: 11/15/2016
- * Time: 11:13 AM
- */
-
 require_once '../includes/imp_files.php';
 
 if (isset($_POST['task']) && trim($_POST['task'])=='run_OrderMatcingAlgorithm') {
 
-    if (isset($OrderClass, $UserClass)) {
-
-        $refresh_orders = $OrderClass->OrderMatchingService();
+            $refresh_orders = OrderMatchingService();
 
         /*If user is logged in user send him messages, if any*/
         if (checkLoginStatus()) {
@@ -25,7 +16,7 @@ if (isset($_POST['task']) && trim($_POST['task'])=='run_OrderMatcingAlgorithm') 
 
             if (isset($user_id)) {
 
-                $validate_user = $UserClass->check_user($user_id);
+                $validate_user = check_user($user_id);
 
                 if($validate_user == "" || empty($validate_user)) {
                     $std->error = true;
@@ -45,7 +36,7 @@ if (isset($_POST['task']) && trim($_POST['task'])=='run_OrderMatcingAlgorithm') 
                 return false;
             }
         }
-    }
+    
     } else {
     return false;
 }
