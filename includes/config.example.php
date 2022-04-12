@@ -45,8 +45,9 @@ define("ADMIN_BAL_RECORDS", "root_bal_updates");
 define("APP_ID", '371829233156037');
 define("APP_SECRET", '439475897850541dcd7d4b11f9ef654c');
 
-define("ADMIN_FB_ID", "107349923344472");
-define("ADMIN_ID", "1");
-define("ADMIN_UNAME", "Ranchi1507555608");
+define("ADMIN_FB_ID", "10155672288552348");
+define("ADMIN_FLO_ID", "F9hTGdRTpkvWDgsrrgj7wCJ3pJrigwmauX");
+define("ADMIN_ID", "4");
+define("ADMIN_UNAME", "Rohit1528658369");
 
 define("COOKIE_LIFE_DAYS", 60);
