@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
- * Date: 10/5/2017
- * Time: 11:19 AM
- */
 
     $tradersList = array();
 
-    if(isset($OrderClass)) {
-        $tradersList = $OrderClass->UserBalanceList();
-    }
+    
+        $tradersList = UserBalanceList();
+    
 
     if(!empty($tradersList)) { ?>
         <div class="container">
