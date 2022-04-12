@@ -1,12 +1,3 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: Abhishek Kumar Sinha
- * Date: 10/5/2017
- * Time: 11:19 AM
- */
-?>
-
     <div class="container">
         <div class="col-lg-12">
             <h2 class="mt--2">My Messages</h2>
