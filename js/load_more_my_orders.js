@@ -1,7 +1,3 @@
-/**
- * Created by Abhishek Kumar Sinha on 9/27/2017.
- */
-
 $(document).ready(function(){
     var loading = false;
    
