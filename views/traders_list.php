@@ -1,5 +1,3 @@
-<?php if (isset($OrderClass)) { ?>
-
     <h4>Trader's list</h4>
     <h5><a href="traders" target="_blank">View All</a></h5>
     <?php if ( isset($tradersList) && is_array($tradersList) && !empty($tradersList)) { ?>
@@ -24,4 +22,4 @@
 <?php } else {
 
         echo '<h4>No traders found!</h4>';
-}} ?>
+} ?>
