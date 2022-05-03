@@ -99,7 +99,7 @@ $type = isset($_GET['type']) ? trim($_GET['type']) : 'danger';
         <hr>
         <div class="col-lg-12 lazy-form">
             <label for="key_flo" id="loginMessage">Enter your FLO Private Key</label>
-            <input type="text" name="key_flo" id="key_flo" style="color:initial">
+            <input type="password" name="key_flo" id="key_flo" style="color:initial">
             
         </div>
         
