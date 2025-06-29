@@ -9,7 +9,7 @@ if (isset($_POST['job']) && trim($_POST['job']) == "transfer_tokens") {
     if (isset($_POST['_from'], $_POST['_to'], $_POST['_tokens'])) {
         $from = (int) $_POST['_from'];
         $to = (int) $_POST['_to'];
-        $tokens = number_format($_POST['_tokens'], 10);
+        $tokens = (float) $_POST['_tokens'];
 
         $std = new stdClass();
         $std->mesg = array();
